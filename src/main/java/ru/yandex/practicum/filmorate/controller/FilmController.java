@@ -1,9 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
+import jakarta.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.ArrayList;
@@ -22,7 +23,8 @@ public class FilmController {
         log.info("Запрошен список фильмов");
         return films;
     }
-    @PostMapping("/film")
+
+    @PostMapping()
     public Film addFilm(@Valid @RequestBody Film film) {
         film.setId(nextFilmId++);
         films.add(film);
@@ -30,8 +32,9 @@ public class FilmController {
         return film;
     }
 
-    @PatchMapping("film/{id}")
-    public Film updateFilm(@Valid @PathVariable int id, @RequestBody Film updatedFilm) {
+    @PutMapping()
+    public Film updateFilm(@Valid @RequestBody Film updatedFilm) {
+        int id = updatedFilm.getId();
         for (int i = 0; i < films.size(); i++) {
             Film film = films.get(i);
             if (film.getId() == id) {
@@ -52,6 +55,6 @@ public class FilmController {
             }
         }
         log.warn("Фильм под ID {} не найден", id);
-        throw new NullPointerException();
+        throw new ValidationException("Фильм с данным ID не найден");
     }
 }

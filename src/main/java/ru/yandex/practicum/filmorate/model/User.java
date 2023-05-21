@@ -3,12 +3,8 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.*;
 import jakarta.validation.constraints.*;
 
-import javax.persistence.Entity;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import java.time.LocalDate;
 
-@Entity
 @Data
 public class User {
     private int id;
@@ -26,13 +22,4 @@ public class User {
     @Past(message = "Дата рождения не может быть в будущем")
     @NotNull(message = "Дата рождения не может быть пустой")
     private LocalDate birthday;
-
-    @PrePersist
-    @PreUpdate
-    private void setDisplayNameIfEmpty() {
-        if (name == null || name.trim().isEmpty()) {
-            name = login;
-        }
-        System.out.println("Method setDisplayNameIfEmpty called");
-    }
 }

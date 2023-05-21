@@ -1,9 +1,11 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.Valid;
+import jakarta.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+// import org.springframework.validation.BindingResult; Если потребуется оформлять в виде выброса исключений
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
@@ -26,8 +28,9 @@ public class UserController {
     @PostMapping()
     public User createUser(@Valid @RequestBody User user) {
         user.setId(nextUserId++);
+        assignNameIfEmpty(user);
         users.add(user);
-        log.info("Пользователь добавлен: {} ",user);
+        log.info("Пользователь добавлен: {} ", user);
         return user;
     }
 
@@ -42,6 +45,7 @@ public class UserController {
                 }
                 if (updatedUser.getName() != null) {
                     user.setName(updatedUser.getName());
+                    assignNameIfEmpty(updatedUser);
                 }
                 if (updatedUser.getEmail() != null) {
                     user.setEmail(updatedUser.getEmail());
@@ -54,7 +58,13 @@ public class UserController {
             }
         }
         log.warn("Пользователь под ID {} не найден", id);
-        throw new NullPointerException();
+        throw new ValidationException("Пользователь с данным ID не найден");
+    }
+
+    private void assignNameIfEmpty(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
     }
 }
 
