@@ -7,8 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/films")
@@ -25,7 +27,10 @@ public class FilmController {
     }
 
     @PostMapping()
-    public Film addFilm(@Valid @RequestBody Film film) {
+    public Film createFilm(@Valid @RequestBody Film film) {
+        if (hasValidationErrors(film)) {
+            throw new ValidationException("Ошибка валидации фильма");
+        }
         film.setId(nextFilmId++);
         films.add(film);
         log.info("Фильм добавлен: {} ", film);
@@ -34,6 +39,9 @@ public class FilmController {
 
     @PutMapping()
     public Film updateFilm(@Valid @RequestBody Film updatedFilm) {
+        if (hasValidationErrors(updatedFilm)) {
+            throw new ValidationException("Ошибка валидации фмльма");
+        }
         int id = updatedFilm.getId();
         for (int i = 0; i < films.size(); i++) {
             Film film = films.get(i);
@@ -56,5 +64,12 @@ public class FilmController {
         }
         log.warn("Фильм под ID {} не найден", id);
         throw new ValidationException("Фильм с данным ID не найден");
+    }
+
+    private boolean hasValidationErrors(Film film) {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<Film>> violations = validator.validate(film);
+        return !violations.isEmpty();
     }
 }

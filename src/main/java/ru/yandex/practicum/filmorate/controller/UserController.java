@@ -3,13 +3,13 @@ package ru.yandex.practicum.filmorate.controller;
 import jakarta.validation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-// import org.springframework.validation.BindingResult; Если потребуется оформлять в виде выброса исключений
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/users")
@@ -27,6 +27,9 @@ public class UserController {
 
     @PostMapping()
     public User createUser(@Valid @RequestBody User user) {
+        if (hasValidationErrors(user)) {
+            throw new ValidationException("Ошибка валидации пользователя");
+        }
         user.setId(nextUserId++);
         assignNameIfEmpty(user);
         users.add(user);
@@ -36,6 +39,9 @@ public class UserController {
 
     @PutMapping()
     public User updateUser(@Valid @RequestBody User updatedUser) {
+        if (hasValidationErrors(updatedUser)) {
+            throw new ValidationException("Ошибка валидации пользователя");
+        }
         int id = updatedUser.getId();
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
@@ -66,5 +72,13 @@ public class UserController {
             user.setName(user.getLogin());
         }
     }
+
+    private boolean hasValidationErrors(User user) {
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        return !violations.isEmpty();
+    }
 }
+
 
