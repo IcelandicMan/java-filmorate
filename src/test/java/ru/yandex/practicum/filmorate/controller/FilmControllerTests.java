@@ -21,7 +21,7 @@ public class FilmControllerTests {
     /*
     Не понимаю почему этот тест не проходится и выбрасывает не мое исключение, а свое
     Expected :class ru.yandex.practicum.filmorate.exception.ValidationException
-    Actual   :class jakarta.validation.ValidationException
+    Actual   :class javax.validation.ValidationException>
 
     @Test
     public void createEmptyFilm_ShouldThrowValidationException() {

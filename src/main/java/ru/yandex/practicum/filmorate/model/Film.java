@@ -1,10 +1,11 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import jakarta.validation.constraints.*;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.filmorate.validator.*;
 
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
