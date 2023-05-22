@@ -16,5 +16,3 @@ public class ReleaseDateValidator implements ConstraintValidator<ValidReleaseDat
         return releaseDate.isAfter(minimumDate);
     }
 }
-
-
