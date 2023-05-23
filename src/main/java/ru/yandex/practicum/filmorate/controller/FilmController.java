@@ -16,7 +16,7 @@ import java.util.*;
 public class FilmController {
 
     private final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final static LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
+    private static final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     Map<Integer, Film> films = new HashMap<>();
     private int idCounter = 0;
 
