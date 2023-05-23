@@ -18,18 +18,13 @@ public class FilmControllerTests {
         filmController = new FilmController();
     }
 
-    /*
-    Не понимаю почему этот тест не проходится и выбрасывает не мое исключение, а свое
-    Expected :class ru.yandex.practicum.filmorate.exception.ValidationException
-    Actual   :class javax.validation.ValidationException>
-
     @Test
     public void createEmptyFilm_ShouldThrowValidationException() {
         Film film = new Film();
 
         assertThrows(ValidationException.class, () -> filmController.createFilm(film));
     }
-     */
+
     @Test
     public void createFilm_WithEmptyName_ShouldThrowValidationException() {
         Film film = new Film();

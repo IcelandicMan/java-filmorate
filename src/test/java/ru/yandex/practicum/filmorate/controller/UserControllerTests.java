@@ -1,7 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.junit.jupiter.api.*;
+
 import static org.junit.jupiter.api.Assertions.*;
+
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -53,7 +55,6 @@ public class UserControllerTests {
 
         assertThrows(ValidationException.class, () -> userController.createUser(user));
     }
-
 
 
     @Test
