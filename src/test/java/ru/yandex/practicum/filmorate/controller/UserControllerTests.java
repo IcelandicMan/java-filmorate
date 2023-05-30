@@ -13,10 +13,6 @@ public class UserControllerTests {
 
     private UserController userController;
 
-    @BeforeEach
-    public void setup() {
-        userController = new UserController();
-    }
 
     @Test
     public void createEmptyUser_ShouldThrowValidationException() {
@@ -89,4 +85,6 @@ public class UserControllerTests {
         assertEquals("test", createdUser.getName());
         assertEquals(LocalDate.of(1990, 1, 1), createdUser.getBirthday());
     }
+
+
 }

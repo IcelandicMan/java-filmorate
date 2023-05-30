@@ -2,32 +2,36 @@ package ru.yandex.practicum.filmorate.controller;
 
 import javax.validation.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final UserService userService;
 
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping()
     public List<User> getUsers() {
         log.info("Запрошен список пользователей");
-        return null;
+        return userService.getUserStorage().getUsers();
     }
 
     @PostMapping()
     public User createUser(@Valid @RequestBody User user) {
         log.info("Создание пользователя: {} ", user);
-        isValid(user);
-
+        userService.getUserStorage().addUser(user);
         log.info("Пользователь добавлен: {} ", user);
         return user;
     }
@@ -35,18 +39,8 @@ public class UserController {
     @PutMapping()
     public User updateUser(@Valid @RequestBody User updatedUser) {
         log.info("Обновление пользователя: {} ", updatedUser);
-        isValid(updatedUser);
-        return null;
-    }
-
-
-    private void isValid(User user) {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        if (!violations.isEmpty()) {
-            throw new ValidationException("Ошибка валидации пользователя");
-        }
+        userService.getUserStorage().updateuser(updatedUser);
+        return updatedUser;
     }
 }
 
