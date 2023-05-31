@@ -31,7 +31,7 @@ public class UserController {
     @PostMapping()
     public User createUser(@Valid @RequestBody User user) {
         log.info("Создание пользователя: {} ", user);
-        userService.getUserStorage().addUser(user);
+        userService.getUserStorage().createUser(user);
         log.info("Пользователь добавлен: {} ", user);
         return user;
     }
@@ -39,7 +39,7 @@ public class UserController {
     @PutMapping()
     public User updateUser(@Valid @RequestBody User updatedUser) {
         log.info("Обновление пользователя: {} ", updatedUser);
-        userService.getUserStorage().updateuser(updatedUser);
+        userService.getUserStorage().updateUser(updatedUser);
         return updatedUser;
     }
 }

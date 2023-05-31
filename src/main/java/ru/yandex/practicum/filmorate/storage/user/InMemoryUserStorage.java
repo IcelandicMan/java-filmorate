@@ -18,17 +18,20 @@ public class InMemoryUserStorage implements UserStorage {
     private int idCounter = 0;
 
     @Override
-    public User addUser(User user) {
+    public User createUser(User user) {
+        log.info("Создание пользователя: {}", user);
         user.setId(++idCounter);
         assignNameIfEmpty(user);
         users.put(user.getId(), user);
+        log.info("Пользователь под id {} создан: {}", user.getId(), user);
         return user;
     }
 
     @Override
-    public User updateuser(User updatedUser) {
+    public User updateUser(User updatedUser) {
         long id = updatedUser.getId();
-        if (users.containsKey(id)) {
+        log.info("Обновление пользователя под id {}: {}", id, updatedUser);
+        if (isValidId(id)) {
             User user = users.get(id);
             if (updatedUser.getLogin() != null) {
                 user.setLogin(updatedUser.getLogin());
@@ -43,10 +46,10 @@ public class InMemoryUserStorage implements UserStorage {
             if (updatedUser.getBirthday() != null) {
                 user.setBirthday(updatedUser.getBirthday());
             }
-            log.info("Пользователь под ID {} обновлен: {} ", id, user);
+            log.info("Пользователь под id {} обновлен: {} ", id, user);
             return user;
         }
-        log.warn("Пользователь под ID {} не найден", id);
+        log.warn("Пользователь под id {} не найден", id);
         throw new ValidationException("Пользователь с данным ID не найден");
     }
 
@@ -76,6 +79,13 @@ public class InMemoryUserStorage implements UserStorage {
             user.setName(user.getLogin());
             log.info("Пользователю под ID {} в параметре name присвоено значение login", user.getId());
         }
+    }
+
+    private boolean isValidId(long id) {
+    if (users.containsKey(id)){
+        return true;
+    }
+        throw new ValidationException("Пользователь с данным ID не найден");
     }
 
 
