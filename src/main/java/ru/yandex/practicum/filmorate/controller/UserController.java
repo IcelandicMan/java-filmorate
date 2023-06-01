@@ -22,10 +22,35 @@ public class UserController {
         this.userService = userService;
     }
 
+    @GetMapping("/{id}")
+    public User getUser(@PathVariable long id) {
+        log.info("Запрошен пользователь с id: {} ", id);
+        User user = userService.getUserStorage().getUser(id);
+        log.info("Запрос на пользователя с id {} выполнен: {} ", id, user);
+        return user;
+    }
+
     @GetMapping()
     public List<User> getUsers() {
-        log.info("Запрошен список пользователей");
+        log.info("Запрошен список Всех пользователей");
         return userService.getUserStorage().getUsers();
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUserFriends(@PathVariable long id) {
+        log.info("Запрошен список всех друзей пользователя под id {} ", id);
+        List<User> friends = userService.getUserStorage().getUserFriends(id);
+        log.info("Запрос на предоставление списка друзкй пользователя с id {} обработан", id);
+        return friends;
+
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
+        log.info("От Пользователя с id {} запрошен список общих друзей с пользователем с id {} ", id, otherId);
+        List<User> commonFriends = userService.getCommonFriends(id, otherId);
+        log.info("Список общих друзей пользователя с id {} с пользователем с id {} предоставлен ", id, otherId);
+        return commonFriends;
     }
 
     @PostMapping()
@@ -44,14 +69,6 @@ public class UserController {
         return updatedUser;
     }
 
-    @GetMapping("/{id}")
-    public User getUser(@PathVariable long id) {
-        log.info("Запрошено пользователь с id: {} ", id);
-        User user = userService.getUserStorage().getUser(id);
-        log.info("Запрошено на пользователя с id {}: {} предоставлен ", id, user);
-        return user;
-    }
-
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable long id, @PathVariable long friendId) {
         log.info("От Пользователя с id {} запрошено добавление в друзья пользователя с id {} ", id, friendId);
@@ -66,21 +83,13 @@ public class UserController {
         log.info("Пользователь id {} удален из друзей пользвателя с id {}", friendId, id);
     }
 
-    @GetMapping("/{id}/friends")
-    public List<User> getUserFriends(@PathVariable long id) {
-        log.info("Запрошен список всех друзей пользователя под id {} ", id);
-        List<User> friends = userService.getUserStorage().getFriends(id);
-        log.info("Запрос на предоставление списка друзкй пользователя с id {} обработан", id);
-        return friends;
-
-    }
-
-    @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable long id, @PathVariable long otherId) {
-        log.info("От Пользователя с id {} запрошен список общих друзей с пользователем с id {} ", id, otherId);
-        List<User> commonFriends = userService.getCommonFriends(id, otherId);
-        log.info("Список общих друзей пользователя с id {} с пользователем с id {} предоставлен ", id, otherId);
-        return commonFriends;
+    //Не безопасный запрос
+    @DeleteMapping("/{id}")
+    public void deleteUser(@PathVariable long id) {
+        log.info("Запрос на удаление Пользователся с id {} ", id);
+        userService.getUserStorage().deleteUser(id);
+        log.info("Пользователь id {} удален", id);
     }
 }
+
 

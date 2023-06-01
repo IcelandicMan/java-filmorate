@@ -6,13 +6,10 @@ import java.util.List;
 
 public interface UserStorage {
 
+    //Делаю ровно по ТЗ, "в которых будут определены методы добавления, удаления и модификации объектов"
     User createUser(User user);
 
     User updateUser(User user);
 
     void deleteUser(long id);
-
-    User getUser(long id);
-
-    List<User> getFriends(long id);
 }

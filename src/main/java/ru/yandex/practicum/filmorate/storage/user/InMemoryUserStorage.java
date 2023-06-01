@@ -31,7 +31,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User updateUser(User updatedUser) {
         log.info("Обновление пользователя под id {}: {}", updatedUser.getId(), updatedUser);
         long id = updatedUser.getId();
-        isValidId(id);
+        isValidUserId(id);
         User user = users.get(id);
         if (updatedUser.getLogin() != null) {
             user.setLogin(updatedUser.getLogin());
@@ -53,49 +53,51 @@ public class InMemoryUserStorage implements UserStorage {
     @Override
     public void deleteUser(long id) {
         log.info("Удаление пользователя с id {}", id);
-        isValidId(id);
+        isValidUserId(id);
         users.remove(id);
         log.info("Пользователь с id {} удален", id);
     }
 
-    @Override
+
     public User getUser(long id) {
         log.info("Получение пользователя с id {}", id);
-        isValidId(id);
+        isValidUserId(id);
         User user = users.get(id);
         log.info("Пользователь с id {} предоставлен: {}", id, user);
         return user;
     }
 
-    @Override
-    public List<User> getFriends(long id) {
-        log.info("Получение списка друзей пользователя с id {}", id);
-        User user = getUser(id);
-        List<Long> friendsId = new ArrayList<>(user.getFriends());
-        List<User> friends = new ArrayList<>();
-        for (Long friendId : friendsId) {
-            User friend = users.get(friendId);
-            friends.add(friend);
-        }
-        log.info("Список друзей пользователя с id {} предоставлен", id);
-        return friends;
+    public List<User> getUsers() {
+        log.info("Получение списка всех пользователей");
+        List<User> usersList = new ArrayList<>(users.values());
+        log.info("Список всех пользователей сформирован");
+        return usersList;
     }
 
-    public List<User> getUsers() {
-        return new ArrayList<>(users.values());
+    public List<User> getUserFriends(long userId) {
+        log.info("Запрос от пользователя с id {} на предоставление списка всех его друзей", userId);
+        User user = users.get(userId);
+        List<Long> friendsIds = new ArrayList<>(user.getFriends());
+        List<User> userFriends = new ArrayList<>();
+        for (Long friendId : friendsIds) {
+            User friend = users.get(friendId);
+            userFriends.add(friend);
+        }
+        log.info("Список всех друзей пользователя с id {} сформирован", userId);
+        return userFriends;
+    }
+
+    public void isValidUserId(long id) {
+        if (!users.containsKey(id)) {
+            log.error("Пользователь под id {} не найден", id);
+            throw new UserNotFoundException(String.format("Пользователь c id %s не найден", id));
+        }
     }
 
     private void assignNameIfEmpty(User user) {
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
             log.info("Пользователю под id {} в параметре name присвоено значение login", user.getId());
-        }
-    }
-
-    private void isValidId(long id) {
-        if (!users.containsKey(id)) {
-            log.warn("Пользователь под id {} не найден", id);
-            throw new UserNotFoundException(String.format("Пользователь c id %s не найден", id));
         }
     }
 }

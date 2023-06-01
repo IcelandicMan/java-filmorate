@@ -2,36 +2,54 @@ package ru.yandex.practicum.filmorate.controller;
 
 import javax.validation.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
+import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
+
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
 
-    private final Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final FilmService filmService;
 
-    private final Map<Integer, Film> films = new HashMap<>();
-    private int idCounter = 0;
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
+
+
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable long id) {
+        log.info("Запрошен фильм с id: {} ", id);
+        Film film = filmService.getFilmStorage().getFilm(id);
+        log.info("Запрос на фильм с id {} выполнен: {} ", id, film);
+        return film;
+    }
 
     @GetMapping
     public List<Film> getAllFilms() {
         log.info("Запрошен список фильмов");
-        return new ArrayList<>(films.values());
+        return filmService.getFilmStorage().getFilms();
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        log.info("Запрошен список " + count + " Популярных фильмов");
+        List<Film> popularFilms = filmService.getFilmsByLikes(count);
+        log.info("Запрос на отправку списка " + count + " популярных фильм выполнен");
+        return popularFilms;
     }
 
     @PostMapping()
     public Film createFilm(@Valid @RequestBody Film film) {
         log.info("создание фильма: {} ", film);
-        isValid(film);
-        film.setId(++idCounter);
-        films.put(film.getId(), film);
+        filmService.getFilmStorage().createFilm(film);
         log.info("Фильм добавлен: {} ", film);
         return film;
     }
@@ -39,41 +57,22 @@ public class FilmController {
     @PutMapping()
     public Film updateFilm(@Valid @RequestBody Film updatedFilm) {
         log.info("Обновление фильма: {} ", updatedFilm);
-        isValid(updatedFilm);
-        int id = updatedFilm.getId();
-        if (films.containsKey(id)) {
-            Film film = films.get(id);
-            if (film.getId() == id) {
-                if (updatedFilm.getName() != null) {
-                    film.setName(updatedFilm.getName());
-                }
-                if (updatedFilm.getDescription() != null) {
-                    film.setDescription(updatedFilm.getDescription());
-                }
-                if (updatedFilm.getReleaseDate() != null) {
-                    film.setReleaseDate(updatedFilm.getReleaseDate());
-                }
-                if (updatedFilm.getDuration() > 0) {
-                    film.setDuration(updatedFilm.getDuration());
-                }
-                log.info("Фильм под ID {} обновлен: {} ", id, film);
-                return film;
-            }
-        }
-        log.warn("Фильм под ID {} не найден", id);
-        throw new ValidationException("Фильм с данным ID не найден");
+        Film film = filmService.getFilmStorage().updateFilm(updatedFilm);
+        log.info("Фильм под ID {} обновлен: {} ", film.getId(), film);
+        return film;
     }
 
-    private void isValid(Film film) {
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        Validator validator = factory.getValidator();
-        Set<ConstraintViolation<Film>> violations = validator.validate(film);
-        if (!violations.isEmpty()) {
-            throw new ValidationException("Ошибка валидации пользователя");
-        }
-        if (film.getReleaseDate().isBefore(MIN_DATE)) {
-            log.warn("Дата фильма ранее 28 декабря 1895");
-            throw new ValidationException("Ошибка валидации пользователя");
-        }
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable long id, @PathVariable long userId){
+        log.info("Запрос от пользователся с id {} на добавление лайка к фильму с id {}",userId, id);
+        filmService.addLike(id, userId);
+        log.info("Like от пользователя с id {} к фильму {} поставлен",userId, id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable long id, @PathVariable long userId){
+        log.info("Запрос от пользователся с id {} на удаление лайка к фильму с id {}",userId, id);
+        filmService.deleteLike(id, userId);
+        log.info("Like от пользователя с id {} к фильму {} удален",userId, id);
     }
 }

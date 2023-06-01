@@ -21,10 +21,12 @@ public class UserService {
     }
 
     public void addFriend(long userId, long friendId) {
+        log.info("Запрос от пользователя с id {}, на в друзья пользователя с id {}", userId, friendId);
+        userStorage.isValidUserId(userId);
+        userStorage.isValidUserId(friendId);
+
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        log.info("Запрос от пользователя с id {}: {}, на в друзья пользователя с id {}: {}",
-                userId, user, friendId, friend);
 
         user.getFriends().add(friendId);
         log.info("Пользователь с id {}, в друзья пользователя с id {}", userId, friendId);
@@ -33,10 +35,12 @@ public class UserService {
     }
 
     public void deleteFriend(long userId, long friendId) {
+        log.info("Запрос от пользователя с id {}, на удаление из друзей пользователя с id {}", userId, friendId);
+        userStorage.isValidUserId(userId);
+        userStorage.isValidUserId(friendId);
+
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        log.info("Запрос от пользователя с id {}: {}, на удаление из друзей пользователя с id {}: {}",
-                userId, user, friendId, friend);
 
         user.getFriends().remove(friendId);
         log.info("Пользователь с id {}, удалил из друзей пользователя с id {}", userId, friendId);
@@ -45,10 +49,14 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(long userId, long friendId) {
+        log.info("Запрос от пользователя с id {}, на получения списка всех общих друзей с пользователем с id {}",
+                userId, friendId);
+
+        userStorage.isValidUserId(userId);
+        userStorage.isValidUserId(friendId);
+
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-        log.info("Запрос от пользователя с id {}: {}, на получения списка всех общих друзей с пользователем с id {}: {}",
-                userId, user, friendId, friend);
 
         Set<Long> userFriends = user.getFriends();
         Set<Long> friendFriends = friend.getFriends();
@@ -61,8 +69,7 @@ public class UserService {
                 commonFriends.add(commonFriend);
             }
         }
-        log.info("Списко общих друзей пользователей под id {} и {} создан",
-                userId, friendId);
+        log.info("Списко общих друзей пользователей под id {} и {} создан", userId, friendId);
         return commonFriends;
     }
 
