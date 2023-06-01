@@ -1,7 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -23,9 +27,12 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film createFilm(Film film) {
         log.info("Создание фильма: {}", film);
-        isValidData(film);
-        film.setId(++idCounter);
-        films.put(film.getId(), film);
+        try {
+            isValidData(film);
+            film.setId(++idCounter);
+            films.put(film.getId(), film);
+        } catch (MethodArgumentNotValidException ignored) {
+        }
         log.info("Фильм под id {} создан: {}", film.getId(), film);
         return film;
     }
@@ -33,8 +40,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film updatedFilm) {
         log.info("Обновление фильма: {} ", updatedFilm);
-        isValidData(updatedFilm);
-        isValidFilmId(updatedFilm.getId());
+        try {
+            isValidData(updatedFilm);
+            isValidFilmId(updatedFilm.getId());
+        } catch (MethodArgumentNotValidException ignored) {
+        }
         long id = updatedFilm.getId();
         Film film = films.get(id);
         if (updatedFilm.getName() != null) {
@@ -82,10 +92,15 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new FilmNotFoundException(String.format("Фильм c id %s не найден", id));
         }
     }
-    public void isValidData(Film film){
-        if(film.getReleaseDate().isBefore(MIN_DATE)){
-            log.warn("Фильм под id {} не прошел валидацию по дате {}", film.getId(), film.getReleaseDate());
-            throw new ValidationException("Ошибка валидации по дате");
+
+    public void isValidData(Film film) throws MethodArgumentNotValidException {
+        if (film.getReleaseDate().isBefore(MIN_DATE)) {
+            String errorMessage = String.format("Фильм под id %d не прошел валидацию по дате %s", film.getId(), film.getReleaseDate());
+
+            FieldError fieldError = new FieldError("film", "releaseDate", film.getReleaseDate(), false, null, null, errorMessage);
+            BindingResult bindingResult = new org.springframework.validation.BeanPropertyBindingResult(film, "film");
+            bindingResult.addError(fieldError);
+            throw new MethodArgumentNotValidException(null, bindingResult);
         }
     }
 }

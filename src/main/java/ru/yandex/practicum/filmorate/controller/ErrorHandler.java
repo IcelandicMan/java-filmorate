@@ -1,8 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
-import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -11,25 +13,28 @@ import ru.yandex.practicum.filmorate.exception.LikeFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
-import javax.validation.ValidationException;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 @Slf4j
-@RestControllerAdvice (assignableTypes = {UserController.class, FilmController.class})
+@RestControllerAdvice(assignableTypes = {UserController.class, FilmController.class})
 public class ErrorHandler {
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIncorrectParameterException(final MethodArgumentNotValidException e) {
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        StringBuilder errorMessage = new StringBuilder("Ошибка валидации по параметру ");
 
-    public ErrorResponse handleIncorrectParameterException(final ValidationException e, BindingResult bindingResult) {
-        List<String> errorMessages = bindingResult.getFieldErrors()
-                .stream()
-                .map(error -> {
-                    String errorMessage = error.getField() + ": " + error.getDefaultMessage();
-                    log.error("Validation error: {}", errorMessage);
-                    return errorMessage;
-                })
-                .collect(Collectors.toList());
-        String errorMessage = String.join(", ", errorMessages);
-        return new ErrorResponse(e.getMessage());
+        for (FieldError fieldError : fieldErrors) {
+            errorMessage.append(fieldError.getField())
+                    .append(" (значение: ")
+                    .append(fieldError.getRejectedValue())
+                    .append("): ")
+                    .append(fieldError.getDefaultMessage())
+                    .append(", ");
+        }
+        log.error(errorMessage.toString());
+        return new ErrorResponse(errorMessage.toString());
     }
 
     @ExceptionHandler
