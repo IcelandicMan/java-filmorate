@@ -21,7 +21,7 @@ public class UserService {
     }
 
     public void addFriend(long userId, long friendId) {
-        log.info("Запрос от пользователя с id {}, на в друзья пользователя с id {}", userId, friendId);
+        log.info("Добавление пользователя с id {} в друзья пользователя с id {}", userId, friendId);
         userStorage.isValidUserId(userId);
         userStorage.isValidUserId(friendId);
 
@@ -29,13 +29,13 @@ public class UserService {
         User friend = userStorage.getUser(friendId);
 
         user.getFriends().add(friendId);
-        log.info("Пользователь с id {}, в друзья пользователя с id {}", userId, friendId);
+        log.info("Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
         friend.getFriends().add(userId);
-        log.info("Пользователь с id {}, автоматически добавил в друзья пользователя с id {}", friendId, userId);
+        log.info("Пользователь с id {} автоматически добавил в друзья пользователя с id {}", friendId, userId);
     }
 
     public void deleteFriend(long userId, long friendId) {
-        log.info("Запрос от пользователя с id {}, на удаление из друзей пользователя с id {}", userId, friendId);
+        log.info("Удаление из друзей пользователя с id {} пользователя с id {}", userId, friendId);
         userStorage.isValidUserId(userId);
         userStorage.isValidUserId(friendId);
 
@@ -49,7 +49,7 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(long userId, long friendId) {
-        log.info("Запрос от пользователя с id {}, на получения списка всех общих друзей с пользователем с id {}",
+        log.info("Получение списка всех общих друзей пользователся с id {} с пользователем с id {}",
                 userId, friendId);
 
         userStorage.isValidUserId(userId);
@@ -69,7 +69,7 @@ public class UserService {
                 commonFriends.add(commonFriend);
             }
         }
-        log.info("Списко общих друзей пользователей под id {} и {} создан", userId, friendId);
+        log.info("Список общих друзей пользователей под id {} и {} предоставлен", userId, friendId);
         return commonFriends;
     }
 

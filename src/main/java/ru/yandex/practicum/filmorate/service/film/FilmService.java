@@ -25,7 +25,7 @@ public class FilmService {
     }
 
     public void addLike(long filmId, long userId) {
-        log.info("Запрос от пользователя с id {}, на добавление лайка к фильму с id {}", userId, filmId);
+        log.info("Добавление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
         userStorage.isValidUserId(userId);
         isValidLikes(filmId, userId);
         Film film = filmStorage.getFilm(filmId);
@@ -34,21 +34,21 @@ public class FilmService {
     }
 
     public void deleteLike(long filmId, long userId) {
-        log.info("Запрос от пользователя с id {}, на удаление лайка к фильму с id {}", userId, filmId);
+        log.info("Удаление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
         userStorage.isValidUserId(userId);
-        isValidLikes(filmId, userId);
         Film film = filmStorage.getFilm(filmId);
         film.getLikes().remove(userId);
         log.info("Пользователь с id {} удалил лайк к фильму с id {}", userId, filmId);
     }
 
     public List<Film> getFilmsByLikes(int count) {
-        log.info("Запрос на получение " + count + " лучших фильмов по количеству лайков");
+        log.info("Получение списка " + count + " лучших фильмов по количеству лайков");
         List<Film> filmList = filmStorage.getFilms();
         Comparator<Film> likesComparator = Comparator.comparingLong(film -> film.getLikes().size());
         filmList.sort(likesComparator.reversed());
 
         int limit = Math.min(filmList.size(), count);
+        log.info("Список " + count + " лучших фильмов по количеству лайков предоставлен");
         return filmList.subList(0, limit);
     }
 

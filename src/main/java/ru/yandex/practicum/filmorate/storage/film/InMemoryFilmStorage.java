@@ -46,7 +46,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (updatedFilm.getDuration() > 0) {
             film.setDuration(updatedFilm.getDuration());
         }
-        log.info("Фильм под ID {} обновлен: {} ", id, film);
+        log.info("Фильм под id {} обновлен: {} ", id, film);
         return film;
     }
 
@@ -62,14 +62,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("Получение Фильма с id {}", id);
         isValidFilmId(id);
         Film film = films.get(id);
-        log.info("Фильма с id {} предоставлен: {}", id, film);
+        log.info("Фильма с id {} получен: {}", id, film);
         return film;
     }
 
     public List<Film> getFilms() {
         log.info("Получение списка всех фильмов");
         List<Film> filmsList = new ArrayList<>(films.values());
-        log.info("Список всех фильмов сформирован");
+        log.info("Список всех фильмов получен");
         return filmsList;
     }
 

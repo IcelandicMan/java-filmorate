@@ -35,44 +35,46 @@ public class FilmController {
     @GetMapping
     public List<Film> getAllFilms() {
         log.info("Запрошен список фильмов");
-        return filmService.getFilmStorage().getFilms();
+        List<Film> films = filmService.getFilmStorage().getFilms();
+        log.info("Запрос на предоставление списка всех фильмов выплнен");
+        return films;
     }
 
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Запрошен список " + count + " Популярных фильмов");
+        log.info("Запрошен список " + count + " популярных фильмов");
         List<Film> popularFilms = filmService.getFilmsByLikes(count);
-        log.info("Запрос на отправку списка " + count + " популярных фильм выполнен");
+        log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
         return popularFilms;
     }
 
     @PostMapping()
     public Film createFilm(@Valid @RequestBody Film film) {
-        log.info("создание фильма: {} ", film);
+        log.info("Запрос на создание фильма: {} ", film);
         filmService.getFilmStorage().createFilm(film);
-        log.info("Фильм добавлен: {} ", film);
+        log.info("Запрос на создание фильма выполнен. Фильм создан: {} ", film);
         return film;
     }
 
     @PutMapping()
     public Film updateFilm(@Valid @RequestBody Film updatedFilm) {
-        log.info("Обновление фильма: {} ", updatedFilm);
+        log.info("Запрос на обновление фильма: {} ", updatedFilm);
         Film film = filmService.getFilmStorage().updateFilm(updatedFilm);
-        log.info("Фильм под ID {} обновлен: {} ", film.getId(), film);
+        log.info("Запрос на обновление фильма выполнен. Фильм под id {} обновлен: {} ", film.getId(), film);
         return film;
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable long id, @PathVariable long userId){
-        log.info("Запрос от пользователся с id {} на добавление лайка к фильму с id {}",userId, id);
+    public void addLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Запрос от пользователся с id {} на добавление лайка к фильму с id {}", userId, id);
         filmService.addLike(id, userId);
-        log.info("Like от пользователя с id {} к фильму {} поставлен",userId, id);
+        log.info("Запрос от пользователся с id {} на добавление лайка к фильму с id {} выполнен", userId, id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable long id, @PathVariable long userId){
-        log.info("Запрос от пользователся с id {} на удаление лайка к фильму с id {}",userId, id);
+    public void deleteLike(@PathVariable long id, @PathVariable long userId) {
+        log.info("Запрос от пользователся с id {} на удаление лайка к фильму с id {}", userId, id);
         filmService.deleteLike(id, userId);
-        log.info("Like от пользователя с id {} к фильму {} удален",userId, id);
+        log.info("Запрос от пользователся с id {} на удаление лайка к фильму с id {} выполнен", userId, id);
     }
 }

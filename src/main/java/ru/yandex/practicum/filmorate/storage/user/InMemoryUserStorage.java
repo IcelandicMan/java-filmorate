@@ -63,19 +63,19 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Получение пользователя с id {}", id);
         isValidUserId(id);
         User user = users.get(id);
-        log.info("Пользователь с id {} предоставлен: {}", id, user);
+        log.info("Пользователь с id {} получен: {}", id, user);
         return user;
     }
 
     public List<User> getUsers() {
         log.info("Получение списка всех пользователей");
         List<User> usersList = new ArrayList<>(users.values());
-        log.info("Список всех пользователей сформирован");
+        log.info("Список всех пользователей получен");
         return usersList;
     }
 
     public List<User> getUserFriends(long userId) {
-        log.info("Запрос от пользователя с id {} на предоставление списка всех его друзей", userId);
+        log.info("Получение от пользователя с id {} на предоставление списка всех его друзей", userId);
         User user = users.get(userId);
         List<Long> friendsIds = new ArrayList<>(user.getFriends());
         List<User> userFriends = new ArrayList<>();
@@ -83,7 +83,7 @@ public class InMemoryUserStorage implements UserStorage {
             User friend = users.get(friendId);
             userFriends.add(friend);
         }
-        log.info("Список всех друзей пользователя с id {} сформирован", userId);
+        log.info("Список всех друзей пользователя с id {} получен", userId);
         return userFriends;
     }
 
