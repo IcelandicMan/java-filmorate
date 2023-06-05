@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.LikeFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,11 +16,11 @@ import java.util.List;
 @Slf4j
 @Service
 public class FilmService {
-    private final InMemoryFilmStorage filmStorage;
-    private final InMemoryUserStorage userStorage;
+    private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     @Autowired
-    public FilmService(InMemoryFilmStorage filmStorage, InMemoryUserStorage userStorage) {
+    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -34,7 +36,7 @@ public class FilmService {
 
     public void deleteLike(long filmId, long userId) {
         log.info("Удаление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
-        userStorage.isValidUserId(userId);
+        if (userStorage)
         Film film = filmStorage.getFilm(filmId);
         film.getLikes().remove(userId);
         log.info("Пользователь с id {} удалил лайк к фильму с id {}", userId, filmId);

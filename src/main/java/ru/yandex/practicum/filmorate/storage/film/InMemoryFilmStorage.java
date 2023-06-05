@@ -57,7 +57,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         films.remove(id);
         log.info("Фильм с id {} удален", id);
     }
-
+    @Override
     public Film getFilm(long id) {
         log.info("Получение Фильма с id {}", id);
         isValidFilmId(id);
@@ -65,7 +65,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("Фильма с id {} получен: {}", id, film);
         return film;
     }
-
+    @Override
     public List<Film> getFilms() {
         log.info("Получение списка всех фильмов");
         List<Film> filmsList = new ArrayList<>(films.values());
