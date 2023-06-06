@@ -23,11 +23,10 @@ public class FilmController {
         this.filmService = filmService;
     }
 
-
     @GetMapping("/{id}")
     public Film getFilm(@PathVariable long id) {
         log.info("Запрошен фильм с id: {} ", id);
-        Film film = filmService.getFilmStorage().getFilm(id);
+        Film film = filmService.getFilm(id);
         log.info("Запрос на фильм с id {} выполнен: {} ", id, film);
         return film;
     }
@@ -35,7 +34,7 @@ public class FilmController {
     @GetMapping
     public List<Film> getAllFilms() {
         log.info("Запрошен список фильмов");
-        List<Film> films = filmService.getFilmStorage().getFilms();
+        List<Film> films = filmService.getFilms();
         log.info("Запрос на предоставление списка всех фильмов выплнен");
         return films;
     }
@@ -51,7 +50,7 @@ public class FilmController {
     @PostMapping()
     public Film createFilm(@Valid @RequestBody Film film) {
         log.info("Запрос на создание фильма: {} ", film);
-        filmService.getFilmStorage().createFilm(film);
+        filmService.createFilm(film);
         log.info("Запрос на создание фильма выполнен. Фильм создан: {} ", film);
         return film;
     }
@@ -59,7 +58,7 @@ public class FilmController {
     @PutMapping()
     public Film updateFilm(@Valid @RequestBody Film updatedFilm) {
         log.info("Запрос на обновление фильма: {} ", updatedFilm);
-        Film film = filmService.getFilmStorage().updateFilm(updatedFilm);
+        Film film = filmService.updateFilm(updatedFilm);
         log.info("Запрос на обновление фильма выполнен. Фильм под id {} обновлен: {} ", film.getId(), film);
         return film;
     }

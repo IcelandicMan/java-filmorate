@@ -6,8 +6,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.LikeFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Comparator;
@@ -25,9 +23,31 @@ public class FilmService {
         this.userStorage = userStorage;
     }
 
+    public Film createFilm(Film film) {
+        return filmStorage.createFilm(film);
+    }
+
+    public Film updateFilm(Film updatedFilm) {
+        filmStorage.getFilm(updatedFilm.getId());
+        return filmStorage.updateFilm(updatedFilm);
+    }
+
+    public void deleteFilm(long id) {
+        filmStorage.getFilm(id);
+        filmStorage.deleteFilm(id);
+    }
+
+    public Film getFilm(long id) {
+        return filmStorage.getFilm(id);
+    }
+
+    public List<Film> getFilms() {
+        return filmStorage.getFilms();
+    }
+
     public void addLike(long filmId, long userId) {
         log.info("Добавление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
-        userStorage.isValidUserId(userId);
+        userStorage.getUser(userId);
         isValidLikes(filmId, userId);
         Film film = filmStorage.getFilm(filmId);
         film.getLikes().add(userId);
@@ -36,7 +56,7 @@ public class FilmService {
 
     public void deleteLike(long filmId, long userId) {
         log.info("Удаление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
-        if (userStorage)
+        userStorage.getUser(userId);
         Film film = filmStorage.getFilm(filmId);
         film.getLikes().remove(userId);
         log.info("Пользователь с id {} удалил лайк к фильму с id {}", userId, filmId);
@@ -59,9 +79,5 @@ public class FilmService {
             log.warn("Пользователь с id {} уже ставил лайк фильму с id {}", userId, filmId);
             throw new LikeFoundException("Пользователь уже ставил лайк данному фильму");
         }
-    }
-
-    public InMemoryFilmStorage getFilmStorage() {
-        return filmStorage;
     }
 }

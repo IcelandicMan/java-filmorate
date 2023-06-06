@@ -25,7 +25,7 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUser(@PathVariable long id) {
         log.info("Запрошен пользователь с id: {} ", id);
-        User user = userService.getUserStorage().getUser(id);
+        User user = userService.getUser(id);
         log.info("Запрос на пользователя с id {} выполнен: {} ", id, user);
         return user;
     }
@@ -33,7 +33,7 @@ public class UserController {
     @GetMapping()
     public List<User> getUsers() {
         log.info("Запрошен список Всех пользователей");
-        List<User> users = userService.getUserStorage().getUsers();
+        List<User> users = userService.getUsers();
         log.info("Запрос на предоставление списка всех пользователей выплнен");
         return users;
     }
@@ -41,7 +41,7 @@ public class UserController {
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@PathVariable long id) {
         log.info("Запрошен список всех друзей пользователя под id {} ", id);
-        List<User> friends = userService.getUserStorage().getUserFriends(id);
+        List<User> friends = userService.getUserFriends(id);
         log.info("Запрос на предоставление списка друзей пользователя с id {} выполнен", id);
         return friends;
     }
@@ -57,7 +57,7 @@ public class UserController {
     @PostMapping()
     public User createUser(@Valid @RequestBody User user) {
         log.info("Запрошено создание пользователя: {} ", user);
-        userService.getUserStorage().createUser(user);
+        userService.createUser(user);
         log.info("Запрос на создание пользователся выполнен, пользователь создан: {} ", user);
         return user;
     }
@@ -65,7 +65,7 @@ public class UserController {
     @PutMapping()
     public User updateUser(@Valid @RequestBody User updatedUser) {
         log.info("Запрошено обновление пользователя: {} ", updatedUser);
-        userService.getUserStorage().updateUser(updatedUser);
+        userService.updateUser(updatedUser);
         log.info("Запрос выполнен, пользователь обновлен: {} ", updatedUser);
         return updatedUser;
     }
@@ -88,7 +88,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable long id) {
         log.info("Запрошено на удаление пользователся с id {} ", id);
-        userService.getUserStorage().deleteUser(id);
+        userService.deleteUser(id);
         log.info("Запрос на удаление пользователя id {} выполнен", id);
     }
 }

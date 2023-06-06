@@ -23,7 +23,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("Создание фильма: {}", film);
         film.setId(++idCounter);
         films.put(film.getId(), film);
-
         log.info("Фильм под id {} создан: {}", film.getId(), film);
         return film;
     }
@@ -31,40 +30,30 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film updateFilm(Film updatedFilm) {
         log.info("Обновление фильма: {} ", updatedFilm);
-        isValidFilmId(updatedFilm.getId());
-        long id = updatedFilm.getId();
-        Film film = films.get(id);
-        if (updatedFilm.getName() != null) {
-            film.setName(updatedFilm.getName());
-        }
-        if (updatedFilm.getDescription() != null) {
-            film.setDescription(updatedFilm.getDescription());
-        }
-        if (updatedFilm.getReleaseDate() != null) {
-            film.setReleaseDate(updatedFilm.getReleaseDate());
-        }
-        if (updatedFilm.getDuration() > 0) {
-            film.setDuration(updatedFilm.getDuration());
-        }
-        log.info("Фильм под id {} обновлен: {} ", id, film);
-        return film;
+        films.put(updatedFilm.getId(), updatedFilm);
+        log.info("Фильм под id {} обновлен: {} ", updatedFilm.getId(), updatedFilm);
+        return updatedFilm;
     }
 
     @Override
     public void deleteFilm(long id) {
         log.info("Удаление фильма с id {}", id);
-        isValidFilmId(id);
         films.remove(id);
         log.info("Фильм с id {} удален", id);
     }
+
     @Override
     public Film getFilm(long id) {
         log.info("Получение Фильма с id {}", id);
-        isValidFilmId(id);
         Film film = films.get(id);
+        if (film == null) {
+            log.warn("Фильм под id {} не найден", id);
+            throw new FilmNotFoundException(String.format("Фильм c id %s не найден", id));
+        }
         log.info("Фильма с id {} получен: {}", id, film);
         return film;
     }
+
     @Override
     public List<Film> getFilms() {
         log.info("Получение списка всех фильмов");
@@ -72,12 +61,4 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("Список всех фильмов получен");
         return filmsList;
     }
-
-    public void isValidFilmId(long id) {
-        if (!films.containsKey(id)) {
-            log.warn("Фильм под id {} не найден", id);
-            throw new FilmNotFoundException(String.format("Фильм c id %s не найден", id));
-        }
-    }
-
 }

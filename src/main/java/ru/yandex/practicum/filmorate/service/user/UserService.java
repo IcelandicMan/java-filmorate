@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
@@ -21,15 +20,35 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public void create
+    public User createUser(User user) {
+        assignNameIfEmpty(user);
+        return userStorage.createUser(user);
+    }
 
+    public User updateUser(User updatedUser) {
+        userStorage.getUser(updatedUser.getId());
+        assignNameIfEmpty(updatedUser);
+        return userStorage.updateUser(updatedUser);
+    }
+
+    public void deleteUser(long id) {
+        userStorage.getUser(id);
+        userStorage.deleteUser(id);
+    }
+
+    public User getUser(long id) {
+        return userStorage.getUser(id);
+    }
+
+    public List<User> getUsers() {
+        log.info("Получение списка всех пользователей");
+        List<User> usersList = userStorage.getUsers();
+        log.info("Список всех пользователей получен");
+        return usersList;
+    }
 
     public void addFriend(long userId, long friendId) {
         log.info("Добавление пользователя с id {} в друзья пользователя с id {}", userId, friendId);
-        if (userStorage.getUser(userId) == null || userStorage.getUser(friendId) == null ){
-
-        }
-
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
 
@@ -41,9 +60,6 @@ public class UserService {
 
     public void deleteFriend(long userId, long friendId) {
         log.info("Удаление из друзей пользователя с id {} пользователя с id {}", userId, friendId);
-        userStorage.isValidUserId(userId);
-        userStorage.isValidUserId(friendId);
-
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
 
@@ -57,14 +73,11 @@ public class UserService {
         log.info("Получение списка всех общих друзей пользователся с id {} с пользователем с id {}",
                 userId, friendId);
 
-        userStorage.isValidUserId(userId);
-        userStorage.isValidUserId(friendId);
+        final User user = userStorage.getUser(userId);
+        final User friend = userStorage.getUser(friendId);
 
-        User user = userStorage.getUser(userId);
-        User friend = userStorage.getUser(friendId);
-
-        Set<Long> userFriends = user.getFriends();
-        Set<Long> friendFriends = friend.getFriends();
+        final Set<Long> userFriends = user.getFriends();
+        final Set<Long> friendFriends = friend.getFriends();
 
         List<User> commonFriends = new ArrayList<>();
 
@@ -78,22 +91,17 @@ public class UserService {
         return commonFriends;
     }
 
-
     public List<User> getUserFriends(long userId) {
         log.info("Получение от пользователя с id {} на предоставление списка всех его друзей", userId);
-        User user = users.get(userId);
+        User user = userStorage.getUser(userId);
         List<Long> friendsIds = new ArrayList<>(user.getFriends());
         List<User> userFriends = new ArrayList<>();
         for (Long friendId : friendsIds) {
-            User friend = users.get(friendId);
+            User friend = userStorage.getUser(friendId);
             userFriends.add(friend);
         }
         log.info("Список всех друзей пользователя с id {} получен", userId);
         return userFriends;
-    }
-
-    public UserStorage getUserStorage() {
-        return userStorage;
     }
 
     private void assignNameIfEmpty(User user) {
@@ -102,18 +110,4 @@ public class UserService {
             log.info("Пользователю под id {} в параметре name присвоено значение login", user.getId());
         }
     }
-
-    public List<User> getUserFriends(long userId) {
-        log.info("Получение от пользователя с id {} на предоставление списка всех его друзей", userId);
-        User user = users.get(userId);
-        List<Long> friendsIds = new ArrayList<>(user.getFriends());
-        List<User> userFriends = new ArrayList<>();
-        for (Long friendId : friendsIds) {
-            User friend = users.get(friendId);
-            userFriends.add(friend);
-        }
-        log.info("Список всех друзей пользователя с id {} получен", userId);
-        return userFriends;
-    }
-
 }

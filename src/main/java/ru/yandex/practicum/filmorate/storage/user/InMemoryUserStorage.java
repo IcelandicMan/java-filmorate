@@ -41,13 +41,19 @@ public class InMemoryUserStorage implements UserStorage {
         log.info("Пользователь с id {} удален", id);
     }
 
+    @Override
     public User getUser(long id) {
         log.info("Получение пользователя с id {}", id);
         User user = users.get(id);
+        if (user == null ) {
+            log.error("Пользовател под id {} не найден", id);
+            throw new UserNotFoundException(String.format("Пользователь c id %s не найден", id));
+        }
         log.info("Пользователь с id {} получен: {}", id, user);
         return user;
     }
 
+    @Override
     public List<User> getUsers() {
         log.info("Получение списка всех пользователей");
         List<User> usersList = new ArrayList<>(users.values());
