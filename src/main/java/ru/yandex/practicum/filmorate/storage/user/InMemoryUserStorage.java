@@ -14,7 +14,7 @@ import java.util.Map;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private final Map<Long, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private int idCounter = 0;
 
     @Override
@@ -35,14 +35,14 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void deleteUser(long id) {
+    public void deleteUser(int id) {
         log.info("Удаление пользователя с id {}", id);
         users.remove(id);
         log.info("Пользователь с id {} удален", id);
     }
 
     @Override
-    public User getUser(long id) {
+    public User getUser(int id) {
         log.info("Получение пользователя с id {}", id);
         User user = users.get(id);
         if (user == null) {

@@ -15,7 +15,7 @@ import java.util.Map;
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
 
-    private final Map<Long, Film> films = new HashMap<>();
+    private final Map<Integer, Film> films = new HashMap<>();
     private int idCounter = 0;
 
     @Override
@@ -36,14 +36,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void deleteFilm(long id) {
+    public void deleteFilm(int id) {
         log.info("Удаление фильма с id {}", id);
         films.remove(id);
         log.info("Фильм с id {} удален", id);
     }
 
     @Override
-    public Film getFilm(long id) {
+    public Film getFilm(int id) {
         log.info("Получение Фильма с id {}", id);
         Film film = films.get(id);
         if (film == null) {
