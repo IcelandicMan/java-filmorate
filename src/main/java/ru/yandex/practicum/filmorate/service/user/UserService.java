@@ -21,7 +21,6 @@ public class UserService {
     @Autowired
     private FriendStorage friendStorage;
 
-
     public User createUser(User user) {
         return userStorage.createUser(assignNameIfEmpty(user));
     }
@@ -64,9 +63,6 @@ public class UserService {
 
         friendStorage.addFriend(userId, friendId);
         log.info("Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
-
-        // friendDao.addFriend(friendId, userId);
-        //log.info("Пользователь с id {} автоматически добавил в друзья пользователя с id {}", friendId, userId);
     }
 
     public List<User> getCommonFriends(int userId, int friendId) {

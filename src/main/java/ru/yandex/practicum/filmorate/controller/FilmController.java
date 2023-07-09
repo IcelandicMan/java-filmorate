@@ -55,6 +55,7 @@ public class FilmController {
         log.info("Запрос на обновление фильма выполнен. Фильм под id {} обновлен: {} ", film.getId(), film);
         return film;
     }
+
     @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Запрос от пользователся с id {} на добавление лайка к фильму с id {}", userId, id);

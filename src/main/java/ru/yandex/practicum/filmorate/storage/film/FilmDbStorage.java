@@ -17,7 +17,6 @@ import ru.yandex.practicum.filmorate.storage.film.mpa.MpaStorage;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +28,6 @@ public class FilmDbStorage implements FilmStorage {
     private JdbcTemplate jdbcTemplate;
     private MpaStorage mpaStorage;
     private GenreStorage genreStorage;
-
 
     @Override
     public Film createFilm(Film film) {
@@ -134,8 +132,6 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
-
-
     @Override
     public List<Film> getFilms() {
         log.info("Получение списка всех Фильмов");
@@ -158,8 +154,6 @@ public class FilmDbStorage implements FilmStorage {
         log.info("Список всех фильмов получен");
         return filmList;
     }
-
-
 
     private RowMapper<Film> filmRowMapper() {
         return (rs, rowNum) -> {

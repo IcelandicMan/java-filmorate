@@ -39,6 +39,7 @@ public class FilmService {
         this.genreStorage = genreStorage;
         this.jdbcTemplate = jdbcTemplate;
     }
+
     public Film createFilm(Film film) {
         return filmStorage.createFilm(film);
     }
@@ -60,7 +61,6 @@ public class FilmService {
     public List<Film> getFilms() {
         return filmStorage.getFilms();
     }
-
 
     public void addLike(int filmId, int userId) {
         log.info("Добавление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
@@ -128,20 +128,3 @@ public class FilmService {
         return genreStorage.getAllGenres();
     }
 }
-/*
- if (mpaId != 0) {
-         Mpa mpa = mpaStorage.getMpaById(mpaId);
-         film.setMpa(mpa);
-         }
-
-    createdFilm.setMpa(mpaStorage.getMpaById(film.getMpa().getId()));
-
-
-
-
-               private boolean isGenreExistsForFilm(int filmId, int genreId) {
-        String sql = "SELECT COUNT(*) FROM film_genres WHERE film_id = ? AND genre_id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, filmId, genreId);
-        return count != null && count > 0;
-    }
- */

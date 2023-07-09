@@ -13,6 +13,7 @@ import java.util.List;
 public class FriendDbStorage implements FriendStorage {
 
     private JdbcTemplate jdbcTemplate;
+
     @Override
     public void addFriend(int userId, int friendId) {
         String sqlAddFriendRequest;
@@ -28,16 +29,17 @@ public class FriendDbStorage implements FriendStorage {
             throw new RuntimeException("Запрос на добавление пользователя с id " + friendId + " уже отправлен");
         }
     }
-/*
-    Часть кода для работы со статусами, которые в Тестах и ТЗ работают в упрощенном виде
-        if (status == null) {
-            sqlAddFriendRequest = "INSERT INTO user_friends (user_id, friend_id, status_id) VALUES (?,?,1)";
-            sqlIncomingRequest = "INSERT INTO user_friends (user_id, friend_id, status_id) VALUES (?,?,3)";
-            jdbcTemplate.update(sqlAddFriendRequest, userId, friendId);
-            jdbcTemplate.update(sqlIncomingRequest, friendId, userId);
-        } else if (status == 3) {
 
- */
+    /*
+        Часть кода для работы со статусами, которые в Тестах и ТЗ работают в упрощенном виде
+            if (status == null) {
+                sqlAddFriendRequest = "INSERT INTO user_friends (user_id, friend_id, status_id) VALUES (?,?,1)";
+                sqlIncomingRequest = "INSERT INTO user_friends (user_id, friend_id, status_id) VALUES (?,?,3)";
+                jdbcTemplate.update(sqlAddFriendRequest, userId, friendId);
+                jdbcTemplate.update(sqlIncomingRequest, friendId, userId);
+            } else if (status == 3) {
+
+     */
     @Override
     public void deleteFriend(int userId, int friendId) {
         String sqlDelFriendRequest = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
@@ -45,10 +47,10 @@ public class FriendDbStorage implements FriendStorage {
     }
 
     @Override
-    public  List <Integer> getUserFriendsIds(int userId) {
+    public List<Integer> getUserFriendsIds(int userId) {
         String sqlGetFriendsIds = "SELECT friend_id FROM user_friends WHERE user_id = ?";
-        List <Integer> userFriendsIds = jdbcTemplate.query(sqlGetFriendsIds, new Object[]{userId}, (rs, rowNum) -> rs.getInt("friend_id"));
-        if (userFriendsIds.isEmpty()){
+        List<Integer> userFriendsIds = jdbcTemplate.query(sqlGetFriendsIds, new Object[]{userId}, (rs, rowNum) -> rs.getInt("friend_id"));
+        if (userFriendsIds.isEmpty()) {
             return Collections.emptyList();
         }
         return userFriendsIds;
