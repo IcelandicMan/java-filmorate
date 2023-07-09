@@ -45,10 +45,10 @@ public class GenreDbStorage implements GenreStorage {
     }
 
     @Override
-    public void deleteGenresByFilmId (int id){
+    public void deleteGenresByFilmId(int id) {
         log.info("Удаление всех Жанров фильма под {} id", id);
         String sql = "DELETE FROM film_genres WHERE film_id = ?";
-        jdbcTemplate.update(sql,id);
+        jdbcTemplate.update(sql, id);
         log.info("Все Жанры фильма под {} id удалены", id);
     }
 
