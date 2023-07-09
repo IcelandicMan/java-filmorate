@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,9 +17,7 @@ import ru.yandex.practicum.filmorate.storage.film.mpa.MpaStorage;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component("filmDbStorage")
@@ -150,16 +149,60 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN film_genres AS fg ON f.film_id = fg.film_id " +
                 "LEFT JOIN genres AS g ON fg.genre_id  = g.genre_id " +
                 "ORDER BY f.film_id";
-        List<Film> filmList = jdbcTemplate.query(sql, filmRowMapper());
+
+        List<Film> filmList = jdbcTemplate.query(sql, filmListResultSetExtractor());
         log.info("Список всех фильмов получен");
         return filmList;
+    }
+
+    private RowMapper<List<Film>> filmListRowMapper() {
+        return (rs, rowNum) -> {
+            List<Film> films = new ArrayList<>();
+            int filmId = 0;
+            Film film = null;
+
+            do {
+                int currentFilmId = rs.getInt("film_id");
+                if (currentFilmId != filmId) {
+                    // Create a new Film object
+                    film = new Film();
+                    film.setId(rs.getInt("film_id"));
+                    film.setName(rs.getString("film_name"));
+                    film.setDescription(rs.getString("film_description"));
+                    film.setReleaseDate(rs.getDate("film_releaseDate").toLocalDate());
+                    film.setDuration(rs.getInt("film_duration"));
+                    film.setRate(rs.getInt("film_rate"));
+
+                    int mpaId = rs.getInt("film_mpa_id");
+                    if (mpaId != 0) {
+                        Mpa mpa = new Mpa(mpaId, rs.getString("mpa_name"));
+                        film.setMpa(mpa);
+                    }
+
+                    List<Genre> genres = new ArrayList<>();
+                    film.setGenres(genres);
+
+                    films.add(film);
+
+                    filmId = currentFilmId;
+                }
+
+                int genreId = rs.getInt("genre_id");
+                if (genreId != 0 && film != null) {
+                    Genre genre = new Genre(genreId, rs.getString("genre_name"));
+                    film.getGenres().add(genre);
+                }
+            } while (rs.next());
+
+            return films;
+        };
     }
 
     private RowMapper<Film> filmRowMapper() {
         return (rs, rowNum) -> {
             int filmId = rs.getInt("film_id");
             Film film = new Film();
-            film.setId(filmId);
+            film.setId(rs.getInt("film_id"));
             film.setName(rs.getString("film_name"));
             film.setDescription(rs.getString("film_description"));
             film.setReleaseDate(rs.getDate("film_releaseDate").toLocalDate());
@@ -183,6 +226,49 @@ public class FilmDbStorage implements FilmStorage {
 
             film.setGenres(genres);
             return film;
+        };
+    }
+
+    private ResultSetExtractor<List<Film>> filmListResultSetExtractor() {
+        return rs -> {
+            List<Film> films = new ArrayList<>();
+            int filmId = 0;
+            Film film = null;
+
+            while (rs.next()) {
+                int currentFilmId = rs.getInt("film_id");
+                if (currentFilmId != filmId) {
+                    // Create a new Film object
+                    film = new Film();
+                    film.setId(rs.getInt("film_id"));
+                    film.setName(rs.getString("film_name"));
+                    film.setDescription(rs.getString("film_description"));
+                    film.setReleaseDate(rs.getDate("film_releaseDate").toLocalDate());
+                    film.setDuration(rs.getInt("film_duration"));
+                    film.setRate(rs.getInt("film_rate"));
+
+                    int mpaId = rs.getInt("film_mpa_id");
+                    if (mpaId != 0) {
+                        Mpa mpa = new Mpa(mpaId, rs.getString("mpa_name"));
+                        film.setMpa(mpa);
+                    }
+
+                    List<Genre> genres = new ArrayList<>();
+                    film.setGenres(genres);
+
+                    films.add(film);
+
+                    filmId = currentFilmId;
+                }
+
+                int genreId = rs.getInt("genre_id");
+                if (genreId != 0 && film != null) {
+                    Genre genre = new Genre(genreId, rs.getString("genre_name"));
+                    film.getGenres().add(genre);
+                }
+            }
+
+            return films;
         };
     }
 
