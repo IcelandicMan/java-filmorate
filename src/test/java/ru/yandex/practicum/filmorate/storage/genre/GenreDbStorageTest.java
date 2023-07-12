@@ -10,12 +10,14 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class GenreDbStorageTest {
 
     private final GenreDbStorage genreDbStorage;
+
     @Test
     void getGenreById() {
         Genre genre = genreDbStorage.getGenreById(4);

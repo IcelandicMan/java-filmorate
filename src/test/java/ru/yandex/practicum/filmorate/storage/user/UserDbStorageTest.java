@@ -19,17 +19,18 @@ import static org.junit.jupiter.api.Assertions.*;
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class UserDbStorageTest {
 
-        private final UserDbStorage userStorage;
+    private final UserDbStorage userStorage;
 
-        @BeforeEach
-        public void setup() {
-            User user = new User();
-            user.setEmail("user@example.com");
-            user.setLogin("userLogin");
-            user.setName("Arthur");
-            user.setBirthday(LocalDate.of(1990,1,1));
-            userStorage.createUser(user);
-        }
+    @BeforeEach
+    public void setup() {
+        User user = new User();
+        user.setEmail("user@example.com");
+        user.setLogin("userLogin");
+        user.setName("Arthur");
+        user.setBirthday(LocalDate.of(1990, 1, 1));
+        userStorage.createUser(user);
+    }
+
     @Test
     @DisplayName("1. Получаем пользователя " + "\n" +
             "2. Обновляем пользователя и получаем пользователя" + "\n" +
@@ -41,8 +42,8 @@ class UserDbStorageTest {
     public void getUser() {
         User user = userStorage.getUser(1);
 
-        assertEquals(1,user.getId());
-        assertEquals("user@example.com",user.getEmail());
+        assertEquals(1, user.getId());
+        assertEquals("user@example.com", user.getEmail());
         assertEquals("userLogin", user.getLogin());
         assertEquals("Arthur", user.getName());
 
@@ -51,18 +52,18 @@ class UserDbStorageTest {
         updateUser.setEmail("update@example.com");
         updateUser.setLogin("updateLogin");
         updateUser.setName("updateName");
-        updateUser.setBirthday(LocalDate.of(1991,1,1));
+        updateUser.setBirthday(LocalDate.of(1991, 1, 1));
 
         User updatedUser = userStorage.updateUser(updateUser);
 
-        assertEquals(1,updatedUser.getId());
-        assertEquals("update@example.com",updatedUser.getEmail());
+        assertEquals(1, updatedUser.getId());
+        assertEquals("update@example.com", updatedUser.getEmail());
         assertEquals("updateLogin", updatedUser.getLogin());
         assertEquals("updateName", updatedUser.getName());
 
         User getedUser = userStorage.getUser(1);
-        assertEquals(1,getedUser.getId());
-        assertEquals("update@example.com",getedUser.getEmail());
+        assertEquals(1, getedUser.getId());
+        assertEquals("update@example.com", getedUser.getEmail());
         assertEquals("updateLogin", getedUser.getLogin());
         assertEquals("updateName", getedUser.getName());
 
@@ -70,13 +71,13 @@ class UserDbStorageTest {
         friend.setEmail("friend@example.com");
         friend.setLogin("friendLogin");
         friend.setName("friend");
-        friend.setBirthday(LocalDate.of(1992,1,1));
+        friend.setBirthday(LocalDate.of(1992, 1, 1));
 
         userStorage.createUser(friend);
-        User userFriend  = userStorage.getUser(2);
+        User userFriend = userStorage.getUser(2);
 
-        assertEquals(2,userFriend.getId());
-        assertEquals("friend@example.com",userFriend.getEmail());
+        assertEquals(2, userFriend.getId());
+        assertEquals("friend@example.com", userFriend.getEmail());
         assertEquals("friendLogin", userFriend.getLogin());
         assertEquals("friend", userFriend.getName());
 
