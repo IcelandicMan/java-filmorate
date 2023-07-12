@@ -9,5 +9,6 @@ public interface GenreStorage {
     Genre getGenreById(int id);
 
     List<Genre> getAllGenres();
-    void load (List<Film> films);
+
+    void load(List<Film> films);
 }
