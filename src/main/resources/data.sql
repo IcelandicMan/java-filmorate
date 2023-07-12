@@ -1,4 +1,4 @@
-INSERT INTO genres (genre_name) VALUES ('Комедия'), ('Драма'), ('Мультфильм'), ('Триллер'), ('Документальный'), ('Боевик');
-INSERT INTO mpa (mpa_name) VALUES ('G'), ('PG'), ('PG-13'), ('R'), ('NC-17');
-INSERT INTO friendship_status (status_name) VALUES ('Исходящий Запрос в друзья отправлен'),
+INSERT INTO genres (name) VALUES ('Комедия'), ('Драма'), ('Мультфильм'), ('Триллер'), ('Документальный'), ('Боевик');
+INSERT INTO mpa (name) VALUES ('G'), ('PG'), ('PG-13'), ('R'), ('NC-17');
+INSERT INTO friendship_status (name) VALUES ('Исходящий Запрос в друзья отправлен'),
 ('Запрос в друзья принят - Друзья'), ('Входящий Запрос в друзья от пользователя ожидает подтверждения'), ('Запрос в друзья отклонен');

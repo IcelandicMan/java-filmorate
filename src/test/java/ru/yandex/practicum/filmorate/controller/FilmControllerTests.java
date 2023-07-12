@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmControllerTests {
 
@@ -37,7 +36,7 @@ public class FilmControllerTests {
         film.setName("Тестовый фильм");
 
         Film createdFilm = filmController.createFilm(film);
-        long filmId = createdFilm.getId();
+        int filmId = createdFilm.getId();
 
         assertEquals(createdFilm, filmController.getFilm(filmId));
 
@@ -51,26 +50,26 @@ public class FilmControllerTests {
         Film secondFilm = new Film();
         secondFilm.setName("Второй фильм");
         Film createdSecondFilm = filmController.createFilm(secondFilm);
-        long secondFilmId = createdSecondFilm.getId();
+        int secondFilmId = createdSecondFilm.getId();
 
         assertEquals(2, filmController.getAllFilms().size());
         assertEquals(upFilm, filmController.getAllFilms().get(0));
         assertEquals(createdSecondFilm, filmController.getAllFilms().get(1));
 
-        //User user = new User();
-        //user.setName("Пользователь");
-        //long userId = userStorage.createUser(user).getId();
+        User user = new User();
+        user.setName("Пользователь");
+        int userId = userStorage.createUser(user).getId();
 
-        //filmController.addLike(filmId, userId);
+        filmController.addLike(filmId, userId);
 
-        assertEquals(1, filmController.getFilm(filmId).getLikes().size());
-        //assertTrue(filmController.getFilm(filmId).getLikes().contains(userId));
+        assertEquals(1, filmController.getFilm(filmId).getRate());
 
         assertEquals(1, filmController.getPopularFilms(1).size());
         assertEquals(upFilm, filmController.getPopularFilms(1).get(0));
 
-        //filmController.deleteLike(filmId, userId);
-        assertEquals(0, filmController.getFilm(filmId).getLikes().size());
+        filmController.deleteLike(filmId, userId);
+        assertEquals(0, filmController.getFilm(filmId).getRate());
     }
 }
+
  */

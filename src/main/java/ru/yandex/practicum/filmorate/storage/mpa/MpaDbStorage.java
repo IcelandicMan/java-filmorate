@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.film.mpa;
+package ru.yandex.practicum.filmorate.storage.mpa;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,24 +20,19 @@ public class MpaDbStorage implements MpaStorage {
     @Override
     public Mpa getMpaById(int mpaId) {
         log.info("Получение MPA под id {}", mpaId);
-        Mpa mpa = null;
-        String sqlId = "Select mpa_id FROM mpa WHERE mpa_id = ?";
-        List<Integer> mpaIdList = jdbcTemplate.query(sqlId, new Object[]{mpaId}, (rs, rowNum) -> rs.getInt("mpa_id"));
-        if (mpaIdList.isEmpty()) {
+        final String sql = "Select * FROM mpa WHERE id = ?";
+        List<Mpa> mpa = jdbcTemplate.query(sql, mpaRowMapper(), mpaId);
+        if (mpa.size() != 1) {
             log.error("MPA Рейтинг под id {} не найден", mpaId);
             throw new MpaNotFoundException(String.format("MPA Рейтинг под id %s не найден", mpaId)); // Выбрасываем новую ошибку
-        } else if (mpaIdList.get(0) == mpaId) {
-            String sql = "SELECT * FROM mpa WHERE mpa_id  = ?";
-            mpa = jdbcTemplate.queryForObject(sql, mpaRowMapper(), mpaId);
-            log.info("MPA Рейтинг с id {} получен: {}", mpaId, mpa);
         }
-        return mpa;
+        return mpa.get(0);
     }
 
     @Override
     public List<Mpa> getAllMpa() {
         log.info("Получение списка всех MPA Рейтингов");
-        String sql = "SELECT * FROM mpa ORDER by mpa_id";
+        String sql = "SELECT * FROM mpa ORDER by id";
         List<Mpa> mpaList = jdbcTemplate.query(sql, mpaRowMapper());
         log.info("Список всех пользователей получен");
         return mpaList;
@@ -46,8 +41,8 @@ public class MpaDbStorage implements MpaStorage {
     private RowMapper<Mpa> mpaRowMapper() {
         return (rs, rowNum) -> {
             Mpa mpa = new Mpa();
-            mpa.setId(rs.getInt("mpa_id"));
-            mpa.setName(rs.getString("mpa_name"));
+            mpa.setId(rs.getInt("id"));
+            mpa.setName(rs.getString("name"));
             return mpa;
         };
     }

@@ -35,7 +35,7 @@ public class FilmController {
     public Film createFilm(@Valid @RequestBody Film film) {
         log.info("Запрос на создание фильма: {} ", film);
         Film createdFilm = filmService.createFilm(film);
-        log.info("Запрос на создание фильма выполнен. Фильм создан: {} ", film);
+        log.info("Запрос на создание фильма выполнен. Фильм создан: {} ", createdFilm);
         return createdFilm;
     }
 

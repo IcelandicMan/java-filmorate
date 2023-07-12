@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage.user.friend;
+package ru.yandex.practicum.filmorate.storage.friend;
 
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
-
 
 @Component
 @AllArgsConstructor
@@ -17,7 +16,7 @@ public class FriendDbStorage implements FriendStorage {
     @Override
     public void addFriend(int userId, int friendId) {
         String sqlAddFriendRequest;
-        String sqlIncomingRequest;
+        //String sqlIncomingRequest;
         String sqlStatus = "SELECT status_id FROM user_friends WHERE user_id = ? AND friend_id = ?";
 
         List<Integer> statusList = jdbcTemplate.query(sqlStatus, new Object[]{userId, friendId}, (rs, rowNum) -> rs.getInt("status_id"));

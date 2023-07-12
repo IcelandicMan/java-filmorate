@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.storage.user.friend.FriendStorage;
+import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -26,12 +26,10 @@ public class UserService {
     }
 
     public User updateUser(User updatedUser) {
-        userStorage.getUser(updatedUser.getId());
         return userStorage.updateUser(assignNameIfEmpty(updatedUser));
     }
 
     public void deleteUser(int id) {
-        userStorage.getUser(id);
         userStorage.deleteUser(id);
     }
 
@@ -40,29 +38,13 @@ public class UserService {
     }
 
     public List<User> getUsers() {
-        log.info("Получение списка всех пользователей");
-        List<User> usersList = userStorage.getUsers();
-        log.info("Список всех пользователей получен");
-        return usersList;
+        return userStorage.getUsers();
     }
-
-    private User assignNameIfEmpty(User user) {
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-            log.info("Пользователю под id {} в параметре name присвоено значение login", user.getId());
-        }
-        return user;
-    }
-
 
     public void addFriend(int userId, int friendId) {
-        log.info("Добавление пользователя с id {} в друзья пользователя с id {}", userId, friendId);
-
         User user = userStorage.getUser(userId);
         User friend = userStorage.getUser(friendId);
-
         friendStorage.addFriend(userId, friendId);
-        log.info("Пользователь с id {} добавил в друзья пользователя с id {}", userId, friendId);
     }
 
     public List<User> getCommonFriends(int userId, int friendId) {
@@ -102,10 +84,15 @@ public class UserService {
 
     public void deleteFriend(int userId, int friendId) {
         log.info("Удаление из друзей пользователя с id {} пользователя с id {}", userId, friendId);
-        User user = userStorage.getUser(userId);
-        User friend = userStorage.getUser(friendId);
-
         friendStorage.deleteFriend(userId, friendId);
         log.info("Пользователь с id {}, удалил из друзей пользователя с id {}", userId, friendId);
+    }
+
+    private User assignNameIfEmpty(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+            log.info("Пользователю под id {} в параметре name присвоено значение login", user.getId());
+        }
+        return user;
     }
 }
