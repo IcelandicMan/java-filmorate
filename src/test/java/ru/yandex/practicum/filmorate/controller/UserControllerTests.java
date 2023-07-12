@@ -1,5 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
-
+/*
         import org.junit.jupiter.api.*;
 
         import static org.junit.jupiter.api.Assertions.*;
@@ -9,7 +9,7 @@ package ru.yandex.practicum.filmorate.controller;
         import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
         import java.time.LocalDate;
-/*
+
 public class UserControllerTests {
 
     private UserController userController;
