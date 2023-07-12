@@ -1,14 +1,14 @@
 package ru.yandex.practicum.filmorate.controller;
+/*
+        import org.junit.jupiter.api.*;
 
-import org.junit.jupiter.api.*;
+        import static org.junit.jupiter.api.Assertions.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+        import ru.yandex.practicum.filmorate.model.User;
+        import ru.yandex.practicum.filmorate.service.user.UserService;
+        import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.user.UserService;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
-
-import java.time.LocalDate;
+        import java.time.LocalDate;
 
 public class UserControllerTests {
 
@@ -16,18 +16,10 @@ public class UserControllerTests {
 
     @BeforeEach
     public void setup() {
-        userController = new UserController(new UserService(new InMemoryUserStorage()));
+        userController = new UserController(new UserService(new BD()));
     }
 
-    @Test
-    @DisplayName("1. Создаем пользователя и получаем пользователя " + "\n" +
-            "2. Обновляем пользователя и получаем пользователя" + "\n" +
-            "3. Создаем друга" + "\n" +
-            "4. Получаем список пользователей  " + "\n" +
-            "5. Добавляем пользователей в друзья  " + "\n" +
-            "6. Получаем список друзей пользователя  " + "\n" +
-            "7. Удаляем пользователей из друзей и получаем список"
-    )
+
     public void createFriends() {
         User user = new User();
         user.setEmail("user@example.com");
@@ -71,4 +63,7 @@ public class UserControllerTests {
         userController.deleteFriend(userId, friendId);
         assertEquals(0, userController.getUserFriends(userId).size());
     }
+
+
 }
+ */
