@@ -2,13 +2,19 @@ package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.LikeFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.Mpa;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 
 @Slf4j
@@ -16,68 +22,80 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final MpaStorage mpaStorage;
+    private final GenreStorage genreStorage;
+    private final LikeStorage likeStorage;
+
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
+    public FilmService(
+            @Qualifier("filmDbStorage") FilmStorage filmStorage,
+            @Qualifier("userDbStorage") UserStorage userStorage,
+            MpaStorage mpaStorage,
+            GenreStorage genreStorage,
+            LikeStorage likeStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.mpaStorage = mpaStorage;
+        this.genreStorage = genreStorage;
+        this.likeStorage = likeStorage;
     }
 
     public Film createFilm(Film film) {
-        return filmStorage.createFilm(film);
+        Film crearedFilm = filmStorage.createFilm(film);
+        return getFilm(crearedFilm.getId());
     }
 
     public Film updateFilm(Film updatedFilm) {
-        filmStorage.getFilm(updatedFilm.getId());
-        return filmStorage.updateFilm(updatedFilm);
+        filmStorage.updateFilm(updatedFilm);
+        return getFilm(updatedFilm.getId());
     }
 
-    public void deleteFilm(long id) {
-        filmStorage.getFilm(id);
+    public void deleteFilm(int id) {
         filmStorage.deleteFilm(id);
     }
 
-    public Film getFilm(long id) {
-        return filmStorage.getFilm(id);
+    public Film getFilm(int id) {
+        final Film film = filmStorage.getFilm(id);
+        genreStorage.load(Collections.singletonList(film));
+        return film;
     }
 
     public List<Film> getFilms() {
-        return filmStorage.getFilms();
+        final List<Film> films = filmStorage.getFilms();
+        genreStorage.load(films);
+        return films;
     }
 
-    public void addLike(long filmId, long userId) {
-        log.info("Добавление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
-        userStorage.getUser(userId);
-        isValidLikes(filmId, userId);
+    public void addLike(int filmId, int userId) {
+        User user = userStorage.getUser(userId);
         Film film = filmStorage.getFilm(filmId);
-        film.getLikes().add(userId);
-        log.info("Пользователь с id {} поставил лайк к фильму с id {}", userId, filmId);
+        likeStorage.addLike(filmId, userId);
     }
 
-    public void deleteLike(long filmId, long userId) {
-        log.info("Удаление лайка от пользователя с id {} к фильму с id {}", userId, filmId);
-        userStorage.getUser(userId);
+    public void deleteLike(int filmId, int userId) {
+        User user = userStorage.getUser(userId);
         Film film = filmStorage.getFilm(filmId);
-        film.getLikes().remove(userId);
-        log.info("Пользователь с id {} удалил лайк к фильму с id {}", userId, filmId);
+        likeStorage.deleteLike(filmId, userId);
     }
 
     public List<Film> getFilmsByLikes(int count) {
-        log.info("Получение списка " + count + " лучших фильмов по количеству лайков");
-        List<Film> filmList = filmStorage.getFilms();
-        Comparator<Film> likesComparator = Comparator.comparingLong(film -> film.getLikes().size());
-        filmList.sort(likesComparator.reversed());
-
-        int limit = Math.min(filmList.size(), count);
-        log.info("Список " + count + " лучших фильмов по количеству лайков предоставлен");
-        return filmList.subList(0, limit);
+        return likeStorage.getFilmsByLikes(count);
     }
 
-    private void isValidLikes(long filmId, long userId) {
-        Film film = filmStorage.getFilm(filmId);
-        if (film.getLikes().contains(userId)) {
-            log.warn("Пользователь с id {} уже ставил лайк фильму с id {}", userId, filmId);
-            throw new LikeFoundException("Пользователь уже ставил лайк данному фильму");
-        }
+    public Mpa getMpaById(int id) {
+        return mpaStorage.getMpaById(id);
+    }
+
+    public List<Mpa> getAllMpa() {
+        return mpaStorage.getAllMpa();
+    }
+
+    public Genre getGenreById(int id) {
+        return genreStorage.getGenreById(id);
+    }
+
+    public List<Genre> getAllGenres() {
+        return genreStorage.getAllGenres();
     }
 }

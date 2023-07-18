@@ -24,12 +24,21 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getFilm(@PathVariable long id) {
+    public Film getFilm(@PathVariable int id) {
         log.info("Запрошен фильм с id: {} ", id);
         Film film = filmService.getFilm(id);
-        log.info("Запрос на фильм с id {} выполнен: {} ", id, film);
+        log.info("Запрос на фильм с id {} выполнен: {} ", film.getId(), film);
         return film;
     }
+
+    @PostMapping()
+    public Film createFilm(@Valid @RequestBody Film film) {
+        log.info("Запрос на создание фильма: {} ", film);
+        Film createdFilm = filmService.createFilm(film);
+        log.info("Запрос на создание фильма выполнен. Фильм создан: {} ", createdFilm);
+        return createdFilm;
+    }
+
 
     @GetMapping
     public List<Film> getAllFilms() {
@@ -37,22 +46,6 @@ public class FilmController {
         List<Film> films = filmService.getFilms();
         log.info("Запрос на предоставление списка всех фильмов выплнен");
         return films;
-    }
-
-    @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Запрошен список " + count + " популярных фильмов");
-        List<Film> popularFilms = filmService.getFilmsByLikes(count);
-        log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
-        return popularFilms;
-    }
-
-    @PostMapping()
-    public Film createFilm(@Valid @RequestBody Film film) {
-        log.info("Запрос на создание фильма: {} ", film);
-        filmService.createFilm(film);
-        log.info("Запрос на создание фильма выполнен. Фильм создан: {} ", film);
-        return film;
     }
 
     @PutMapping()
@@ -64,16 +57,24 @@ public class FilmController {
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable long id, @PathVariable long userId) {
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Запрос от пользователся с id {} на добавление лайка к фильму с id {}", userId, id);
         filmService.addLike(id, userId);
         log.info("Запрос от пользователся с id {} на добавление лайка к фильму с id {} выполнен", userId, id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable long id, @PathVariable long userId) {
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Запрос от пользователся с id {} на удаление лайка к фильму с id {}", userId, id);
         filmService.deleteLike(id, userId);
         log.info("Запрос от пользователся с id {} на удаление лайка к фильму с id {} выполнен", userId, id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        log.info("Запрошен список " + count + " популярных фильмов");
+        List<Film> popularFilms = filmService.getFilmsByLikes(count);
+        log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
+        return popularFilms;
     }
 }
