@@ -28,7 +28,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film createFilm(Film film) {
         log.info("Создание фильма: {}", film);
-        String sql = "INSERT INTO films (name, description, releaseDate, duration, rate, mpa_id) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO films (name, description, releaseDate, duration, mpa_id) VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -37,8 +37,7 @@ public class FilmDbStorage implements FilmStorage {
             ps.setString(2, film.getDescription());
             ps.setDate(3, java.sql.Date.valueOf(film.getReleaseDate()));
             ps.setInt(4, film.getDuration());
-            ps.setInt(5, film.getRate());
-            ps.setInt(6, film.getMpa().getId());
+            ps.setInt(5, film.getMpa().getId());
             return ps;
         }, keyHolder);
 
@@ -61,11 +60,14 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilm(int id) {
         log.info("Получение фильма с id {}", id);
-        final String sqlQuery = "SELECT *, " +
-                "m.name AS mpa_name " +
+        final String sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+                "m.name AS mpa_name, " +
+                "COUNT (fl.user_id) AS rate " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
-                "WHERE f.id = ?";
+                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+                "WHERE f.id = ? " +
+                "GROUP BY f.id";
         final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, id);
         if (films.size() != 1) {
             log.error("Фильм с id {} не найден", id);
@@ -78,10 +80,13 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getFilms() {
         log.info("Получение списка всех Фильмов");
-        String sql = "SELECT *, " +
-                "m.name AS mpa_name " +
+        String sql = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+                "m.name AS mpa_name, " +
+                "COUNT (fl.user_id) AS rate " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
+                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+                "GROUP BY f.id " +
                 "ORDER BY f.id";
         List<Film> filmList = jdbcTemplate.query(sql, FilmDbStorage::makeFilm);
         log.info("Список всех фильмов получен");
@@ -97,14 +102,13 @@ public class FilmDbStorage implements FilmStorage {
                 "description = ?, " +
                 "releaseDate = ?, " +
                 "duration = ?, " +
-                "rate = ?, " +
                 "mpa_id = ? " +
                 "WHERE id = ?";
         jdbcTemplate.update(sql, updatedFilm.getName(), updatedFilm.getDescription(),
                 java.sql.Date.valueOf(updatedFilm.getReleaseDate()), updatedFilm.getDuration(),
-                updatedFilm.getRate(), updatedFilm.getMpa().getId(), updatedFilm.getId());
+                updatedFilm.getMpa().getId(), filmId);
         saveGenres(updatedFilm);
-        log.info("Фильм под id {} обновлен: {} ", updatedFilm.getId(), updatedFilm);
+        log.info("Фильм под id {} обновлен: {} ", filmId, updatedFilm);
         return updatedFilm;
     }
 
