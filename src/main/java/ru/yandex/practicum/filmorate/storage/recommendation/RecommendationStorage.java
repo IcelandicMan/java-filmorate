@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface RecommendationStorage {
 
-    List<Film> getRecommendation (int userId);
+    List<Film> getRecommendation(int userId);
 }
