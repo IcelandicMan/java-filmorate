@@ -35,7 +35,7 @@ public class GenreController {
     public List<Genre> getGenres() {
         log.info("Запрошен список всех жанров");
         List<Genre> genres = filmService.getAllGenres();
-        log.info("Запрос на предоставление списка всех жанров выплнен");
+        log.info("Запрос на предоставление списка всех жанров выполнен");
         return genres;
     }
 }
