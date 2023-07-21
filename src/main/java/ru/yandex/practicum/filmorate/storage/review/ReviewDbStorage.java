@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.review;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
@@ -19,7 +18,6 @@ import static java.util.function.UnaryOperator.identity;
 
 @Component
 @AllArgsConstructor
-@Slf4j
 public class ReviewDbStorage implements ReviewStorage {
     private JdbcTemplate jdbcTemplate;
 
@@ -67,8 +65,7 @@ public class ReviewDbStorage implements ReviewStorage {
                 "FROM reviews " +
                 "WHERE film_id = ? " +
                 "LIMIT ?";
-        List<Review> reviews = jdbcTemplate.query(sql, reviewRowMapper(), filmId, count);
-        return reviews;
+        return jdbcTemplate.query(sql, reviewRowMapper(), filmId, count);
     }
 
     @Override

@@ -2,9 +2,7 @@ package ru.yandex.practicum.filmorate.service.review;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
@@ -28,25 +26,15 @@ public class ReviewService {
     }
 
     public Review createReview(Review review) {
-        if (userStorage.getUser(review.getUserId()) == null) {
-            throw new UserNotFoundException("Пользователь с id " + review.getUserId() + " не найден");
-        }
-        if (filmStorage.getFilm(review.getFilmId()) == null) {
-            throw new FilmNotFoundException("Фильм с id " + review.getFilmId() + " не найден");
-        }
+        userStorage.getUser(review.getUserId());
+        filmStorage.getFilm(review.getFilmId());
         return reviewStorage.createReview(review);
     }
 
     public Review updateReview(Review review) {
-        if (reviewStorage.getReview(review.getReviewId()) == null) {
-            throw new ReviewNotFoundException("Отзыв с id " + review.getReviewId() + " не найден");
-        }
-        if (userStorage.getUser(review.getUserId()) == null) {
-            throw new UserNotFoundException("Пользователь с id " + review.getUserId() + " не найден");
-        }
-        if (filmStorage.getFilm(review.getFilmId()) == null) {
-            throw new FilmNotFoundException("Фильм с id " + review.getFilmId() + " не найден");
-        }
+        reviewStorage.getReview(review.getReviewId());
+        userStorage.getUser(review.getUserId());
+        filmStorage.getFilm(review.getFilmId());
         return reviewStorage.updateReview(review);
     }
 
