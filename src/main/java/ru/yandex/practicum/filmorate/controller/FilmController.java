@@ -77,4 +77,20 @@ public class FilmController {
         log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
         return popularFilms;
     }
+
+    @GetMapping("/director/{directorId}?sortBy=year")
+    public List<Film> getFilmsSortByYear() {
+        log.info("Запрошен список фильмов");
+        List<Film> films = filmService.getFilms();
+        log.info("Запрос на предоставление списка всех фильмов выплнен");
+        return films;
+    }
+
+    @GetMapping("/director/{directorId}?sortBy=likes")
+    public List<Film> getFilmsSortByLikes() {
+        log.info("Запрошен список фильмов");
+        List<Film> films = filmService.getFilms();
+        log.info("Запрос на предоставление списка всех фильмов выплнен");
+        return films;
+    }
 }

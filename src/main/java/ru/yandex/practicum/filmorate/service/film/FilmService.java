@@ -4,16 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +24,7 @@ public class FilmService {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
+    private final DirectorStorage directorStorage;
 
 
     @Autowired
@@ -33,12 +33,14 @@ public class FilmService {
             @Qualifier("userDbStorage") UserStorage userStorage,
             MpaStorage mpaStorage,
             GenreStorage genreStorage,
-            LikeStorage likeStorage) {
+            LikeStorage likeStorage,
+            DirectorStorage directorStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.mpaStorage = mpaStorage;
         this.genreStorage = genreStorage;
         this.likeStorage = likeStorage;
+        this.directorStorage = directorStorage;
     }
 
     public Film createFilm(Film film) {
@@ -97,5 +99,33 @@ public class FilmService {
 
     public List<Genre> getAllGenres() {
         return genreStorage.getAllGenres();
+    }
+
+    public List<Director> getDirectors() {
+        return directorStorage.getDirectors();
+    }
+
+    public Director getDirectorById(int id) {
+        return directorStorage.getDirectorById(id);
+    }
+
+    public Director createDirector(Director director) {
+        return directorStorage.createDirector(director);
+    }
+
+    public void deleteDirectorById(Integer id) {
+        directorStorage.deleteDirectorById(id);
+    }
+
+    public Director updateDirector(Director director) {
+        return directorStorage.updateDirector(director);
+    }
+
+    public List<Film> getFilmsSortByYear(Integer id) {
+        return new ArrayList<>();
+    }
+
+    public List<Film> getFilmsSortByLikes(Integer id) {
+        return new ArrayList<>();
     }
 }
