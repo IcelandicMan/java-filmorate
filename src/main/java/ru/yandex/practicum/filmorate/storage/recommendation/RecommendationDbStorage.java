@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.util.List;
 
-@Slf4j
 @Component
 @AllArgsConstructor
 public class RecommendationDbStorage implements RecommendationStorage {
