@@ -83,6 +83,10 @@ public class FilmService {
         return likeStorage.getFilmsByLikes(count);
     }
 
+    public List<Film> getCommonUsersFilms(int userId, int friendId) {
+        return likeStorage.getCommonUsersFilms(userId, friendId);
+    }
+
     public Mpa getMpaById(int id) {
         return mpaStorage.getMpaById(id);
     }

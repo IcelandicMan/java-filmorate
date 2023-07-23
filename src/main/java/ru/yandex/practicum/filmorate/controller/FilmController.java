@@ -77,4 +77,13 @@ public class FilmController {
         log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
         return popularFilms;
     }
+
+    @GetMapping("/common")
+    public List<Film> getCommonUsersFilms(@RequestParam int userId, @RequestParam int friendId) {
+        log.info("Запрошен список общих фильмов пользователей с id {} и {}", userId, friendId);
+        List<Film> commonFilms = filmService.getCommonUsersFilms(userId, friendId);
+        log.info("Запрос на отправку списка общих фильмов пользователей с id {} и {} выполнен успешно", userId,
+                friendId);
+        return commonFilms;
+    }
 }
