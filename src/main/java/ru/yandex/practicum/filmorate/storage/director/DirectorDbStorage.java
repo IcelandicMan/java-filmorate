@@ -15,7 +15,7 @@ import java.util.Map;
 @Slf4j
 @Component
 @AllArgsConstructor
-public class DirectorDbStorage implements DirectorStorage{
+public class DirectorDbStorage implements DirectorStorage {
 
     private JdbcTemplate jdbcTemplate;
 
