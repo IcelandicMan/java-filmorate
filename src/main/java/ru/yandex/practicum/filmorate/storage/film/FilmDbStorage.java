@@ -167,7 +167,7 @@ public class FilmDbStorage implements FilmStorage {
         if (filmList.isEmpty()) {
             throw new DirectorNotFoundException("Режиссёр c id " + id + " не найден");
         }
-        log.info("Список фильмов режиссёра с id = " + id +" получен");
+        log.info("Список фильмов режиссёра с id = " + id + " получен");
         return filmList;
     }
 
@@ -202,7 +202,7 @@ public class FilmDbStorage implements FilmStorage {
         if (filmList.isEmpty()) {
             throw new DirectorNotFoundException("Режиссёр c id " + id + " не найден");
         }
-        log.info("Список фильмов режиссёра с id = " + id +" получен");
+        log.info("Список фильмов режиссёра с id = " + id + " получен");
         return filmList;
     }
 
@@ -215,7 +215,7 @@ public class FilmDbStorage implements FilmStorage {
                 rs.getInt("duration"),
                 rs.getInt("rate"),
                 new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name")));
-        if(rs.getInt("director_id") > 0) {
+        if (rs.getInt("director_id") > 0) {
             film.setDirectors(List.of(
                     new Director(rs.getInt("director_id"),
                             rs.getString("director"))));
