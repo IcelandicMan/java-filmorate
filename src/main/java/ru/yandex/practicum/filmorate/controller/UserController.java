@@ -5,6 +5,7 @@ import javax.validation.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
@@ -91,6 +92,15 @@ public class UserController {
         userService.deleteUser(id);
         log.info("Запрос на удаление пользователя id {} выполнен", id);
     }
+
+    @GetMapping("/{id}/feed")
+    public List<Feed> getFeeds(@PathVariable("id") Integer userId) {
+        log.info("Запрос на получение ленты событий пользователя с id{}", userId);
+        List<Feed> feeds  = userService.getFeeds(userId);
+        log.info("Лента событий пользователя с id " + userId + " получена");
+        return feeds;
+    }
+
 }
 
 
