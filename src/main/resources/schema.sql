@@ -37,7 +37,6 @@ CREATE TABLE IF NOT EXISTS films (
 	releaseDate date NOT NULL,
 	duration integer NOT NULL,
 	mpa_id integer NULL,
-	rate integer NULL DEFAULT 0,
 	CONSTRAINT films_pk PRIMARY KEY (id),
 	CONSTRAINT films_fk FOREIGN KEY (mpa_id) REFERENCES mpa(id)
 );

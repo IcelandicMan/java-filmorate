@@ -1,17 +1,13 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.AllArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -20,9 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Component("filmDbStorage")
@@ -52,17 +46,16 @@ public class FilmDbStorage implements FilmStorage {
         if (!generatedKeys.isEmpty()) {
             Map<String, Object> keysMap = generatedKeys.get(0); // Предполагаем, что нужен первый сгенерированный ключ
             int generatedId = (Integer) keysMap.get("id");
+
+
             // Вставляем связи с жанрами
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)", generatedId, genre.getId());
             }
-            film.setId(generatedId);
-            saveDirector(film);
             return getFilm(generatedId);
         } else {
             throw new RuntimeException("Failed to retrieve generated keys");
         }
-
     }
 
     @Override
@@ -70,14 +63,17 @@ public class FilmDbStorage implements FilmStorage {
         log.info("Получение фильма с id {}", id);
         final String sqlQuery = "SELECT *, " +
                 "m.ID mpa_id, " +
-                "m.NAME mpa_name, " +
+                "m.name AS mpa_name, " +
+                "COUNT (fl.user_id) AS rate " +
                 "d.ID director_id, " +
                 "d.NAME director " +
                 "FROM FILMS f " +
                 "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
                 "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
                 "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
-                "WHERE f.id = ?";
+                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+                "WHERE f.id = ? " +
+                "GROUP BY f.id";
         final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, id);
         if (films.size() != 1) {
             log.error("Фильм с id {} не найден", id);
@@ -92,13 +88,16 @@ public class FilmDbStorage implements FilmStorage {
         log.info("Получение списка всех Фильмов");
         String sql = "SELECT *, " +
                 "m.ID mpa_id, " +
-                "m.NAME mpa_name, " +
+                "m.name AS mpa_name, " +
+                "COUNT (fl.user_id) AS rate " +
                 "d.ID director_id, " +
                 "d.NAME director " +
                 "FROM FILMS f " +
                 "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
                 "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
                 "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
+                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+                "GROUP BY f.id " +
                 "ORDER BY f.id";
         List<Film> filmList = jdbcTemplate.query(sql, FilmDbStorage::makeFilm);
         log.info("Список всех фильмов получен");
@@ -122,7 +121,7 @@ public class FilmDbStorage implements FilmStorage {
                 updatedFilm.getRate(), updatedFilm.getMpa().getId(), updatedFilm.getId());
         saveGenres(updatedFilm);
         saveDirector(updatedFilm);
-        log.info("Фильм под id {} обновлен: {} ", updatedFilm.getId(), updatedFilm);
+        log.info("Фильм под id {} обновлен: {} ", filmId, updatedFilm);
         return updatedFilm;
     }
 
@@ -225,13 +224,14 @@ public class FilmDbStorage implements FilmStorage {
         }
         final int filmId = film.getId();
         jdbcTemplate.update("DELETE from film_genres where film_id = ?", filmId);
-        if (genres.isEmpty()) {
+        final List<Genre> genres = film.getGenres();
+        if (genres == null || genres.isEmpty()) {
             return;
         }
         jdbcTemplate.batchUpdate(
                 "INSERT INTO film_genres (film_id, genre_id) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM film_genres WHERE film_id = ? AND genre_id = ?)",
                 new BatchPreparedStatementSetter() {
-                    final List<Genre> genreList = new ArrayList<>(genres);
+                    List<Genre> genreList = new ArrayList<>(genres);
 
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         Genre genre = genreList.get(i);
