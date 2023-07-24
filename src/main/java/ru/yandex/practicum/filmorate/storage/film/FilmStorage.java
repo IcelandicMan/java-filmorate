@@ -17,6 +17,7 @@ public interface FilmStorage {
     List<Film> getFilms();
 
     List<Film> getFilmsSortByYear(Integer id);
+
     List<Film> getFilmsSortByLikes(Integer id);
 }
 
