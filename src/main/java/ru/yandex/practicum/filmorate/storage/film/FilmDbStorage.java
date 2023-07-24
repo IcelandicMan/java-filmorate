@@ -20,7 +20,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component("filmDbStorage")
@@ -229,7 +231,7 @@ public class FilmDbStorage implements FilmStorage {
         jdbcTemplate.batchUpdate(
                 "INSERT INTO film_genres (film_id, genre_id) SELECT ?, ? WHERE NOT EXISTS (SELECT 1 FROM film_genres WHERE film_id = ? AND genre_id = ?)",
                 new BatchPreparedStatementSetter() {
-                    List<Genre> genreList = new ArrayList<>(genres);
+                    final List<Genre> genreList = new ArrayList<>(genres);
 
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
                         Genre genre = genreList.get(i);
