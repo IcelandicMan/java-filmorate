@@ -34,8 +34,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film createFilm(Film film) {
         log.info("Создание фильма: {}", film);
-        String sql = "INSERT INTO films (name, description, releaseDate, duration, rate, mpa_id) VALUES (?, ?, ?, ?, ?, ?)";
-
+        String sql = "INSERT INTO films (name, description, releaseDate, duration, mpa_id) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -43,21 +42,19 @@ public class FilmDbStorage implements FilmStorage {
             ps.setString(2, film.getDescription());
             ps.setDate(3, java.sql.Date.valueOf(film.getReleaseDate()));
             ps.setInt(4, film.getDuration());
-            ps.setInt(5, film.getRate());
-            ps.setInt(6, film.getMpa().getId());
+            ps.setInt(5, film.getMpa().getId());
             return ps;
         }, keyHolder);
-
         List<Map<String, Object>> generatedKeys = keyHolder.getKeyList();
         if (!generatedKeys.isEmpty()) {
             Map<String, Object> keysMap = generatedKeys.get(0); // Предполагаем, что нужен первый сгенерированный ключ
             int generatedId = (Integer) keysMap.get("id");
-
-
             // Вставляем связи с жанрами
             for (Genre genre : film.getGenres()) {
                 jdbcTemplate.update("INSERT INTO film_genres (film_id, genre_id) VALUES (?, ?)", generatedId, genre.getId());
             }
+            film.setId(generatedId);
+            saveDirector(film);
             return getFilm(generatedId);
         } else {
             throw new RuntimeException("Failed to retrieve generated keys");
@@ -70,7 +67,7 @@ public class FilmDbStorage implements FilmStorage {
         final String sqlQuery = "SELECT *, " +
                 "m.ID mpa_id, " +
                 "m.name AS mpa_name, " +
-                "COUNT (fl.user_id) AS rate " +
+                "COUNT (fl.user_id) AS rate, " +
                 "d.ID director_id, " +
                 "d.NAME director " +
                 "FROM FILMS f " +
@@ -95,7 +92,7 @@ public class FilmDbStorage implements FilmStorage {
         String sql = "SELECT *, " +
                 "m.ID mpa_id, " +
                 "m.name AS mpa_name, " +
-                "COUNT (fl.user_id) AS rate " +
+                "COUNT (fl.user_id) AS rate, " +
                 "d.ID director_id, " +
                 "d.NAME director " +
                 "FROM FILMS f " +
@@ -119,12 +116,11 @@ public class FilmDbStorage implements FilmStorage {
                 "description = ?, " +
                 "releaseDate = ?, " +
                 "duration = ?, " +
-                "rate = ?, " +
                 "mpa_id = ? " +
                 "WHERE id = ?";
         jdbcTemplate.update(sql, updatedFilm.getName(), updatedFilm.getDescription(),
                 java.sql.Date.valueOf(updatedFilm.getReleaseDate()), updatedFilm.getDuration(),
-                updatedFilm.getRate(), updatedFilm.getMpa().getId(), updatedFilm.getId());
+            updatedFilm.getMpa().getId(), updatedFilm.getId());
         saveGenres(updatedFilm);
         saveDirector(updatedFilm);
         log.info("Фильм под id {} обновлен: {} ", filmId, updatedFilm);
@@ -150,7 +146,6 @@ public class FilmDbStorage implements FilmStorage {
                 "f.MPA_ID, " +
                 "m.ID mpa_id, " +
                 "m.NAME mpa_name, " +
-                "f.RATE, " +
                 "g.ID genre_id, " +
                 "g.NAME genre_name, " +
                 "d.ID director_id, " +
@@ -182,7 +177,6 @@ public class FilmDbStorage implements FilmStorage {
                 "f.MPA_ID, " +
                 "m.ID mpa_id, " +
                 "m.NAME mpa_name, " +
-                "f.RATE, " +
                 "g.ID genre_id, " +
                 "g.NAME genre_name, " +
                 "d.ID director_id, " +
