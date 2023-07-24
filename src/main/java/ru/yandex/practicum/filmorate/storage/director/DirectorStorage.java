@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
 
