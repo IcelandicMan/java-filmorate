@@ -121,11 +121,11 @@ public class FilmService {
         return directorStorage.updateDirector(director);
     }
 
-    public List<Film> getFilmsSortByYear(Integer id) {
-        return new ArrayList<>();
-    }
-
-    public List<Film> getFilmsSortByLikes(Integer id) {
-        return new ArrayList<>();
+    public List<Film> getFilmsSortBy(Integer id, String sortBy) {
+        if (sortBy.equals("year")) {
+            return filmStorage.getFilmsSortByYear(id);
+        } else if (sortBy.equals("likes")) {
+            return filmStorage.getFilmsSortByLikes(id);
+        } else throw new RuntimeException();
     }
 }

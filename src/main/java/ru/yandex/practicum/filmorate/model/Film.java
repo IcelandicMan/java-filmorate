@@ -33,7 +33,7 @@ public class Film {
 
     private List<Genre> genres = new ArrayList<>();
 
-    private Director director;
+    private List<Director> directors = new ArrayList<>();
 
     public Film() {
     }

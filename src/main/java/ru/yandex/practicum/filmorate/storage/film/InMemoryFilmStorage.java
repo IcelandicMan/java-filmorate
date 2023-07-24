@@ -61,4 +61,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.info("Список всех фильмов получен");
         return filmsList;
     }
+
+    @Override
+    public List<Film> getFilmsSortByYear(Integer id) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getFilmsSortByLikes(Integer id) {
+        return null;
+    }
 }

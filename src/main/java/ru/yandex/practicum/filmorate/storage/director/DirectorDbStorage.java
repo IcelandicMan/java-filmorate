@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.director;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,17 +14,18 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 public class DirectorDbStorage implements DirectorStorage{
 
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public Director getDirectorById(int id) {
         List<Director> directorsQuery = jdbcTemplate.query("SELECT * " +
                 "FROM directors d " +
                 "WHERE d.id = ?", rowMapperDirector(), id);
-        if (directorsQuery.get(0) == null) {
-            throw new  DirectorNotFoundException(String.format("Режисёр c id %s не найден", id));
+        if (directorsQuery.isEmpty()) {
+            throw new  DirectorNotFoundException(String.format("Режиссёр c id %s не найден", id));
         }
         return directorsQuery.get(0);
     }
@@ -57,7 +59,7 @@ public class DirectorDbStorage implements DirectorStorage{
                 director.getName(),
                 director.getId());
         if (update == 0) {
-            throw new  DirectorNotFoundException(String.format("Режисёр c id %s не найден", director.getId()));
+            throw new  DirectorNotFoundException(String.format("Режиссёр c id %s не найден", director.getId()));
         }
         return getDirectorById(director.getId());
     }

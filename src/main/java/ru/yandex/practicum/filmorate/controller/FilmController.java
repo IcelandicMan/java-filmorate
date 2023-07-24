@@ -78,18 +78,10 @@ public class FilmController {
         return popularFilms;
     }
 
-    @GetMapping("/director/{directorId}?sortBy=year")
-    public List<Film> getFilmsSortByYear() {
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsSortByYear(@PathVariable int directorId, @RequestParam String sortBy) {
         log.info("Запрошен список фильмов");
-        List<Film> films = filmService.getFilms();
-        log.info("Запрос на предоставление списка всех фильмов выплнен");
-        return films;
-    }
-
-    @GetMapping("/director/{directorId}?sortBy=likes")
-    public List<Film> getFilmsSortByLikes() {
-        log.info("Запрошен список фильмов");
-        List<Film> films = filmService.getFilms();
+        List<Film> films = filmService.getFilmsSortBy(directorId, sortBy);
         log.info("Запрос на предоставление списка всех фильмов выплнен");
         return films;
     }

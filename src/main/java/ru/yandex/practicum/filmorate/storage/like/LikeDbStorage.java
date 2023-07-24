@@ -47,9 +47,13 @@ public class LikeDbStorage implements LikeStorage {
     @Override
     public List<Film> getFilmsByLikes(int count) {
         final String sqlQuery = "SELECT *, " +
-                "m.name AS mpa_name " +
+                "m.name AS mpa_name, " +
+                "d.ID director_id, " +
+                "d.NAME director " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
+                "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
+                "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
                 "ORDER by rate DESC " +
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, count);

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RestControllerAdvice(assignableTypes = {UserController.class, FilmController.class,
-        MpaController.class, GenreController.class})
+        MpaController.class, GenreController.class, DirectorController.class})
 
 public class ErrorHandler {
     @ExceptionHandler
@@ -62,6 +62,12 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleDirectorNotFoundException(final DirectorNotFoundException e) {
         return new ErrorResponse(e.getMessage());
     }
 
