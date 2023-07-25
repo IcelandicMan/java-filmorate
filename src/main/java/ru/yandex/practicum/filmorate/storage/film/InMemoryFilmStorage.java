@@ -62,12 +62,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsSortByYear(Integer id) {
-        return null;
-    }
-
-    @Override
-    public List<Film> getFilmsSortByLikes(Integer id) {
+    public List<Film> getFilmsSortBy(Integer id, String sortBy) {
         return null;
     }
 }

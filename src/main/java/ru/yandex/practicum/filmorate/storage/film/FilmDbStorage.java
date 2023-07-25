@@ -126,38 +126,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmsSortByYear(Integer id) {
-        log.info("Получение списка всех фильмов режиссёра по годам");
-        String sql = "SELECT f.ID, " +
-                "f.NAME, " +
-                "f.DESCRIPTION, " +
-                "f.RELEASEDATE, " +
-                "f.DURATION, " +
-                "f.MPA_ID, " +
-                "m.ID mpa_id, " +
-                "m.NAME mpa_name, " +
-                "g.ID genre_id, " +
-                "g.NAME genre_name, " +
-                "d.ID director_id, " +
-                "d.NAME director " +
-                "FROM FILMS f " +
-                "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
-                "LEFT JOIN film_genres fg on f.id = fg.film_id " +
-                "LEFT JOIN genres g on fg.GENRE_ID  = g.id " +
-                "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
-                "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
-                "WHERE d.ID = ? " +
-                "ORDER BY f.RELEASEDATE ";
-        List<Film> filmList = jdbcTemplate.query(sql, rowMapperFilm(), id);
-        if (filmList.isEmpty()) {
-            throw new DirectorNotFoundException("Режиссёр c id " + id + " не найден");
-        }
-        log.info("Список фильмов режиссёра с id = " + id + " получен");
-        return filmList;
-    }
-
-    @Override
-    public List<Film> getFilmsSortByLikes(Integer id) {
+    public List<Film> getFilmsSortBy(Integer id, String sortBy) {
         log.info("Получение списка всех фильмов режиссёра по лайкам");
         String sql = "SELECT f.ID, " +
                 "f.NAME, " +
@@ -180,8 +149,8 @@ public class FilmDbStorage implements FilmStorage {
                 "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
                 "LEFT JOIN FILM_LIKES fl ON fl.FILM_ID = f.ID ";
         sql += "WHERE d.ID = ? " +
-                "GROUP BY f.ID " +
-                "ORDER BY likes DESC ";
+                " GROUP BY f.ID " +
+                "ORDER BY " + sortBy;
         List<Film> filmList = jdbcTemplate.query(sql, rowMapperFilm(), id);
         if (filmList.isEmpty()) {
             throw new DirectorNotFoundException("Режиссёр c id " + id + " не найден");
@@ -191,7 +160,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     public static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
-        Film film = new Film(
+        return new Film(
                 rs.getInt("id"),
                 rs.getString("name"),
                 rs.getString("description"),
@@ -199,7 +168,6 @@ public class FilmDbStorage implements FilmStorage {
                 rs.getInt("duration"),
                 rs.getInt("rate"),
                 new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name")));
-       return film;
     }
 
     private void saveGenres(Film film) {
@@ -233,7 +201,7 @@ public class FilmDbStorage implements FilmStorage {
 
 
     private void saveDirector(Film film) {
-        final List<Director> directors = film.getDirectors();
+        final List<Director> directors =  new ArrayList<>(film.getDirectors());
         if (directors == null) {
             return;
         }
@@ -246,18 +214,15 @@ public class FilmDbStorage implements FilmStorage {
                 "INSERT INTO film_directors (film_id, director_id) SELECT ?, ? " +
                         "WHERE NOT EXISTS (SELECT 1 FROM film_directors WHERE film_id = ? AND director_id = ?)",
                 new BatchPreparedStatementSetter() {
-                    final List<Director> directorList = new ArrayList<>(directors);
-
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        Director director = directorList.get(i);
+                        Director director = directors.get(i);
                         ps.setInt(1, filmId);
                         ps.setInt(2, director.getId());
                         ps.setInt(3, filmId);
                         ps.setInt(4, director.getId());
                     }
-
                     public int getBatchSize() {
-                        return directorList.size();
+                        return directors.size();
                     }
                 });
     }

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -124,9 +125,10 @@ public class FilmService {
 
     public List<Film> getFilmsSortBy(Integer id, String sortBy) {
         if (sortBy.equals("year")) {
-            return filmStorage.getFilmsSortByYear(id);
+            sortBy = "RELEASEDATE";
         } else if (sortBy.equals("likes")) {
-            return filmStorage.getFilmsSortByLikes(id);
-        } else throw new RuntimeException();
+            sortBy += " DESC";
+        }
+        return Collections.unmodifiableList(filmStorage.getFilmsSortBy(id, sortBy));
     }
 }
