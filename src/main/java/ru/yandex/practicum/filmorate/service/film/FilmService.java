@@ -126,8 +126,11 @@ public class FilmService {
         if (sortBy.equals("year")) {
             sortBy = "RELEASEDATE";
         } else if (sortBy.equals("likes")) {
-            sortBy += " DESC";
+            sortBy = " rate DESC";
         }
-        return Collections.unmodifiableList(filmStorage.getFilmsSortBy(id, sortBy));
+        List<Film> films = Collections.unmodifiableList(filmStorage.getFilmsSortBy(id, sortBy));
+        genreStorage.load(films);
+        directorStorage.load(films);
+        return films;
     }
 }

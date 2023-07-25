@@ -39,7 +39,7 @@ public class DirectorController {
     @PostMapping()
     public Director createDirector(@Valid @RequestBody Director director) {
         log.info("Запрос на создание режиссёра: {}", director);
-        Director newDirector = filmService.createDirector(filmService.createDirector(director));
+        Director newDirector = filmService.createDirector(director);
         log.info("Режиссёр создан: {}", director);
         return newDirector;
     }

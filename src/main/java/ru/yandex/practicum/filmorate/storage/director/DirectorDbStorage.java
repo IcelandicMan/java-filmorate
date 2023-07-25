@@ -31,7 +31,7 @@ public class DirectorDbStorage implements DirectorStorage {
         log.info("Получение режиссёра с id {}", id);
         List<Director> directorsQuery = jdbcTemplate.query("SELECT * " +
                 "FROM directors d " +
-                "WHERE d.id = ?", rowMapperDirector(), id);
+                "WHERE d.id = ? " , rowMapperDirector(), id);
         if (directorsQuery.isEmpty()) {
             log.info("Режиссёр с id {} не найден", id);
             throw new  DirectorNotFoundException(String.format("Режиссёр c id %s не найден", id));
@@ -44,7 +44,8 @@ public class DirectorDbStorage implements DirectorStorage {
     public List<Director> getDirectors() {
         log.info("Получение списка всех режиссёров");
         List<Director> directorsQuery = jdbcTemplate.query("SELECT * " +
-                "FROM directors d ", rowMapperDirector());
+                "FROM directors d " +
+            "GROUP BY d.id", rowMapperDirector());
         log.info("Список всех режиссёров получен");
         return directorsQuery;
     }
@@ -57,6 +58,7 @@ public class DirectorDbStorage implements DirectorStorage {
                 .usingGeneratedKeyColumns("id");
         Map<String, String> params = Map.of("name", director.getName());
         Integer id = (Integer) insert.executeAndReturnKey(params);
+        log.info("Создан режиссёр с id: {}", id);
         return getDirectorById(id);
     }
 

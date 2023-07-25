@@ -128,30 +128,18 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getFilmsSortBy(Integer id, String sortBy) {
         log.info("Получение списка всех фильмов режиссёра с сортировкой");
-        String sql = "SELECT f.ID, " +
-                "f.NAME, " +
-                "f.DESCRIPTION, " +
-                "f.RELEASEDATE, " +
-                "f.DURATION, " +
-                "f.MPA_ID";
-        sql += ", m.ID mpa_id, " +
-                "m.NAME mpa_name";
-        sql += ", g.ID genre_id, " +
-                "g.NAME genre_name";
-        sql += ", d.ID director_id, " +
-                "d.NAME director";
-        sql +=  ", COUNT(fl.USER_ID) likes";
-        sql +=  " FROM FILMS f ";
-        sql += "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
-                "LEFT JOIN film_genres fg on f.id = fg.film_id " +
-                "LEFT JOIN genres g on fg.GENRE_ID  = g.id " +
-                "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
-                "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
-                "LEFT JOIN FILM_LIKES fl ON fl.FILM_ID = f.ID ";
-        sql += "WHERE d.ID = ? " +
-                " GROUP BY f.ID " +
-                "ORDER BY " + sortBy;
-        List<Film> filmList = jdbcTemplate.query(sql, rowMapperFilm(), id);
+        String sql = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+            "m.name AS mpa_name, " +
+            "COUNT (fl.user_id) AS rate " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
+            "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+            "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
+            "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
+            "WHERE d.id = ? " +
+            "GROUP BY f.id " +
+            "ORDER BY " + sortBy;
+        List<Film> filmList = jdbcTemplate.query(sql, FilmDbStorage::makeFilm, id);
         if (filmList.isEmpty()) {
             log.info("Режиссёр c id {} не найден", id);
             throw new DirectorNotFoundException("Режиссёр c id " + id + " не найден");
@@ -227,29 +215,5 @@ public class FilmDbStorage implements FilmStorage {
                         return directors.size();
                     }
                 });
-    }
-
-    private RowMapper<Film> rowMapperFilm() {
-        return (rs, rowNum) -> {
-            Film film = new Film();
-            film.setId(rs.getInt("id"));
-            film.setName(rs.getString("name"));
-            film.setDescription(rs.getString("description"));
-            film.setDuration(rs.getInt("duration"));
-            film.setReleaseDate(rs.getDate("releasedate").toLocalDate());
-            film.setMpa(new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name")));
-            if (rs.getInt("genre_id") > 0) {
-                film.setGenres(FilmDbStorage.this.newGenre(rs));
-            } else film.setGenres(new ArrayList<>());
-            film.setDirectors(List.of(new Director(rs.getInt("director_id"), rs.getString("director"))));
-            return film;
-        };
-    }
-
-    @SneakyThrows
-    private List<Genre> newGenre(ResultSet rs) {
-        List<Genre> genres = new ArrayList<>();
-        genres.add(new Genre(rs.getInt("genre_id"), rs.getString("genre_name")));
-        return genres;
     }
 }
