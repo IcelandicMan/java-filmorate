@@ -222,6 +222,7 @@ public class FilmDbStorage implements FilmStorage {
                         ps.setInt(3, filmId);
                         ps.setInt(4, director.getId());
                     }
+
                     public int getBatchSize() {
                         return directors.size();
                     }
