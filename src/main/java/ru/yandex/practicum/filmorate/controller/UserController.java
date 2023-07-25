@@ -5,7 +5,9 @@ import javax.validation.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
 import java.util.*;
@@ -16,10 +18,12 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
+    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FilmService filmService) {
         this.userService = userService;
+        this.filmService = filmService;
     }
 
     @GetMapping("/{id}")
@@ -75,6 +79,14 @@ public class UserController {
         List<User> friends = userService.getUserFriends(id);
         log.info("Запрос на предоставление списка друзей пользователя с id {} выполнен", id);
         return friends;
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable int id) {
+        log.info("Запрошен список рекомендованных фильмов для пользователя под  id {} ", id);
+        List<Film> films = filmService.getRecommendation(id);
+        log.info("Запрос на предоставление списка рекомендованных фильмов для пользователя под  id {} выполнен", id);
+        return films;
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
