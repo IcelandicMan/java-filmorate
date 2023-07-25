@@ -84,7 +84,6 @@ public class UserController {
         log.info("Запрос от пользователя с id id {} на удаление из друзей пользвателя с id {} выполнен", friendId, id);
     }
 
-    //Не безопасный запрос
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable int id) {
         log.info("Запрошено на удаление пользователся с id {} ", id);

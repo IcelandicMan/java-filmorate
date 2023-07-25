@@ -39,13 +39,20 @@ public class FilmController {
         return createdFilm;
     }
 
-
     @GetMapping
     public List<Film> getAllFilms() {
         log.info("Запрошен список фильмов");
         List<Film> films = filmService.getFilms();
         log.info("Запрос на предоставление списка всех фильмов выплнен");
         return films;
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        log.info("Запрошен список " + count + " популярных фильмов");
+        List<Film> popularFilms = filmService.getFilmsByLikes(count);
+        log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
+        return popularFilms;
     }
 
     @PutMapping()
@@ -70,11 +77,10 @@ public class FilmController {
         log.info("Запрос от пользователся с id {} на удаление лайка к фильму с id {} выполнен", userId, id);
     }
 
-    @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Запрошен список " + count + " популярных фильмов");
-        List<Film> popularFilms = filmService.getFilmsByLikes(count);
-        log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
-        return popularFilms;
+    @DeleteMapping("/{id}")
+    public void deleteFilm(@PathVariable int id) {
+        log.info("Запрошено на удаление фильма с id {} ", id);
+        filmService.deleteFilm(id);
+        log.info("Запрос на удаление фильма c id {} выполнен", id);
     }
 }

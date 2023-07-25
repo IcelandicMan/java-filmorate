@@ -80,7 +80,9 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByLikes(int count) {
-        return likeStorage.getFilmsByLikes(count);
+        List<Film> films = likeStorage.getFilmsByLikes(count);
+        genreStorage.load(films);
+        return films;
     }
 
     public Mpa getMpaById(int id) {
