@@ -31,7 +31,7 @@ public class DirectorDbStorage implements DirectorStorage {
         log.info("Получение режиссёра с id {}", id);
         List<Director> directorsQuery = jdbcTemplate.query("SELECT * " +
                 "FROM directors d " +
-                "WHERE d.id = ? " , rowMapperDirector(), id);
+                "WHERE d.id = ? ", rowMapperDirector(), id);
         if (directorsQuery.isEmpty()) {
             log.info("Режиссёр с id {} не найден", id);
             throw new  DirectorNotFoundException(String.format("Режиссёр c id %s не найден", id));
