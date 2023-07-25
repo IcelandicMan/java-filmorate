@@ -127,7 +127,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilmsSortBy(Integer id, String sortBy) {
-        log.info("Получение списка всех фильмов режиссёра по лайкам");
+        log.info("Получение списка всех фильмов режиссёра с сортировкой");
         String sql = "SELECT f.ID, " +
                 "f.NAME, " +
                 "f.DESCRIPTION, " +
@@ -153,6 +153,7 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY " + sortBy;
         List<Film> filmList = jdbcTemplate.query(sql, rowMapperFilm(), id);
         if (filmList.isEmpty()) {
+            log.info("Режиссёр c id {} не найден", id);
             throw new DirectorNotFoundException("Режиссёр c id " + id + " не найден");
         }
         log.info("Список фильмов режиссёра с id = " + id + " получен");
