@@ -64,19 +64,14 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film getFilm(int id) {
         log.info("Получение фильма с id {}", id);
-        final String sqlQuery = "SELECT *, " +
-                "m.ID mpa_id, " +
-                "m.name AS mpa_name, " +
-                "COUNT (fl.user_id) AS rate, " +
-                "d.ID director_id, " +
-                "d.NAME director " +
-                "FROM FILMS f " +
-                "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
-                "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
-                "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
-                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
-                "WHERE f.id = ? " +
-                "GROUP BY f.id";
+        final String sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+            "m.name AS mpa_name, " +
+            "COUNT (fl.user_id) AS rate " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
+            "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+            "WHERE f.id = ? " +
+            "GROUP BY f.id";
         final List<Film> films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, id);
         if (films.size() != 1) {
             log.error("Фильм с id {} не найден", id);
@@ -89,19 +84,14 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> getFilms() {
         log.info("Получение списка всех Фильмов");
-        String sql = "SELECT *, " +
-                "m.ID mpa_id, " +
-                "m.name AS mpa_name, " +
-                "COUNT (fl.user_id) AS rate, " +
-                "d.ID director_id, " +
-                "d.NAME director " +
-                "FROM FILMS f " +
-                "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
-                "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
-                "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
-                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
-                "GROUP BY f.id " +
-                "ORDER BY f.id";
+        String sql = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+            "m.name AS mpa_name, " +
+            "COUNT (fl.user_id) AS rate " +
+            "FROM films AS f " +
+            "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
+            "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+            "GROUP BY f.id " +
+            "ORDER BY f.id";
         List<Film> filmList = jdbcTemplate.query(sql, FilmDbStorage::makeFilm);
         log.info("Список всех фильмов получен");
         return filmList;
@@ -174,22 +164,22 @@ public class FilmDbStorage implements FilmStorage {
                 "f.DESCRIPTION, " +
                 "f.RELEASEDATE, " +
                 "f.DURATION, " +
-                "f.MPA_ID, " +
-                "m.ID mpa_id, " +
-                "m.NAME mpa_name, " +
-                "g.ID genre_id, " +
-                "g.NAME genre_name, " +
-                "d.ID director_id, " +
-                "d.NAME director," +
-                "COUNT(fl.USER_ID) likes " +
-                "FROM FILMS f " +
-                "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
+                "f.MPA_ID";
+        sql += ", m.ID mpa_id, " +
+                "m.NAME mpa_name";
+        sql += ", g.ID genre_id, " +
+                "g.NAME genre_name";
+        sql += ", d.ID director_id, " +
+                "d.NAME director";
+        sql +=  ", COUNT(fl.USER_ID) likes";
+        sql +=  " FROM FILMS f ";
+        sql += "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
                 "LEFT JOIN film_genres fg on f.id = fg.film_id " +
                 "LEFT JOIN genres g on fg.GENRE_ID  = g.id " +
                 "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
                 "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
-                "LEFT JOIN FILM_LIKES fl ON fl.FILM_ID = f.ID " +
-                "WHERE d.ID = ? " +
+                "LEFT JOIN FILM_LIKES fl ON fl.FILM_ID = f.ID ";
+        sql += "WHERE d.ID = ? " +
                 "GROUP BY f.ID " +
                 "ORDER BY likes DESC ";
         List<Film> filmList = jdbcTemplate.query(sql, rowMapperFilm(), id);
@@ -209,12 +199,7 @@ public class FilmDbStorage implements FilmStorage {
                 rs.getInt("duration"),
                 rs.getInt("rate"),
                 new Mpa(rs.getInt("mpa_id"), rs.getString("mpa_name")));
-        if (rs.getInt("director_id") > 0) {
-            film.setDirectors(List.of(
-                    new Director(rs.getInt("director_id"),
-                            rs.getString("director"))));
-        }
-        return film;
+       return film;
     }
 
     private void saveGenres(Film film) {

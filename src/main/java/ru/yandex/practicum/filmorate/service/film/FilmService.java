@@ -59,12 +59,14 @@ public class FilmService {
     public Film getFilm(int id) {
         final Film film = filmStorage.getFilm(id);
         genreStorage.load(Collections.singletonList(film));
+        directorStorage.load(Collections.singletonList(film));
         return film;
     }
 
     public List<Film> getFilms() {
         final List<Film> films = filmStorage.getFilms();
         genreStorage.load(films);
+        directorStorage.load(films);
         return films;
     }
 
