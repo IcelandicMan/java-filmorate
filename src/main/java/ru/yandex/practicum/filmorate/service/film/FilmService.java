@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.recommendation.RecommendationDbStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collections;
@@ -24,7 +25,7 @@ public class FilmService {
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
     private final DirectorStorage directorStorage;
-
+    private final RecommendationDbStorage recommendationDbStorage;
 
     @Autowired
     public FilmService(
@@ -33,13 +34,15 @@ public class FilmService {
             MpaStorage mpaStorage,
             GenreStorage genreStorage,
             LikeStorage likeStorage,
-            DirectorStorage directorStorage) {
+            DirectorStorage directorStorage,
+            RecommendationDbStorage recommendationDbStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.mpaStorage = mpaStorage;
         this.genreStorage = genreStorage;
         this.likeStorage = likeStorage;
         this.directorStorage = directorStorage;
+        this.recommendationDbStorage = recommendationDbStorage;
     }
 
     public Film createFilm(Film film) {
@@ -83,7 +86,16 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByLikes(int count) {
-        return likeStorage.getFilmsByLikes(count);
+        List<Film> films = likeStorage.getFilmsByLikes(count);
+        genreStorage.load(films);
+        return films;
+    }
+
+    public List<Film> getRecommendation(int userId) {
+        List<Film> films = recommendationDbStorage.getRecommendation(userId);
+        genreStorage.load(films);
+        // В дальнейшем нужно добавить режисеров load
+        return films;
     }
 
     public Mpa getMpaById(int id) {
