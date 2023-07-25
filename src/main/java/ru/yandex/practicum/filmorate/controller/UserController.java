@@ -38,7 +38,7 @@ public class UserController {
     public List<User> getUsers() {
         log.info("Запрошен список Всех пользователей");
         List<User> users = userService.getUsers();
-        log.info("Запрос на предоставление списка всех пользователей выплнен");
+        log.info("Запрос на предоставление списка всех пользователей выполнен");
         return users;
     }
 
@@ -46,7 +46,7 @@ public class UserController {
     public User createUser(@Valid @RequestBody User user) {
         log.info("Запрошено создание пользователя: {} ", user);
         User createdUser = userService.createUser(user);
-        log.info("Запрос на создание пользователся выполнен, пользователь создан: {} ", createdUser);
+        log.info("Запрос на создание пользователя выполнен, пользователь создан: {} ", createdUser);
         return createdUser;
     }
 
@@ -62,7 +62,7 @@ public class UserController {
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Запрошен от пользователя с id {} добавление в друзья пользователя с id {} ", id, friendId);
         userService.addFriend(id, friendId);
-        log.info("Запрос от пользователя с id {} на добавление в друзья пользователяс id {} выполнен", id, friendId);
+        log.info("Запрос от пользователя с id {} на добавление в друзья пользователя id {} выполнен", id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
@@ -93,12 +93,12 @@ public class UserController {
     public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Запрошен от пользователя с id {} удаление из друзей пользователя с id {} ", id, friendId);
         userService.deleteFriend(id, friendId);
-        log.info("Запрос от пользователя с id id {} на удаление из друзей пользвателя с id {} выполнен", friendId, id);
+        log.info("Запрос от пользователя с id id {} на удаление из друзей пользователя с id {} выполнен", friendId, id);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable int id) {
-        log.info("Запрошено на удаление пользователся с id {} ", id);
+        log.info("Запрошено на удаление пользователя с id {} ", id);
         userService.deleteUser(id);
         log.info("Запрос на удаление пользователя id {} выполнен", id);
     }

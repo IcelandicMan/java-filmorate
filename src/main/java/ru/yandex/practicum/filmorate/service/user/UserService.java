@@ -48,7 +48,7 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(int userId, int friendId) {
-        log.info("Получение списка всех общих друзей пользователся с id {} с пользователем с id {}",
+        log.info("Получение списка всех общих друзей пользователя с id {} с пользователем с id {}",
                 userId, friendId);
 
         final User user = userStorage.getUser(userId);
