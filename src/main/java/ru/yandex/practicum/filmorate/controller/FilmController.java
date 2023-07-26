@@ -89,4 +89,12 @@ public class FilmController {
         log.info("Запрос на предоставление списка всех фильмов выплнен");
         return films;
     }
+
+    @GetMapping("/search")
+    public List<Film> searchFilmsBy(@RequestParam("query") String query,@RequestParam("by") String searchBy) {
+        log.info("Запрос на поиск " + query + ", " + searchBy);
+        List<Film> films = filmService.searchFilmsBy(query, searchBy);
+        log.info("Запрос на поиск выполнен" + query + ", " + searchBy);
+        return films;
+    }
 }
