@@ -99,6 +99,10 @@ public class FilmService {
         return films;
     }
 
+    public List<Film> getCommonUsersFilms(int userId, int friendId) {
+        return likeStorage.getCommonUsersFilms(userId, friendId);
+    }
+
     public Mpa getMpaById(int id) {
         return mpaStorage.getMpaById(id);
     }
@@ -142,6 +146,13 @@ public class FilmService {
             sortBy = " rate DESC";
         }
         List<Film> films = Collections.unmodifiableList(filmStorage.getFilmsSortBy(id, sortBy));
+        genreStorage.load(films);
+        directorStorage.load(films);
+        return films;
+    }
+
+    public List<Film> searchFilmsBy(String query, String searchBy) {
+        List<Film> films = filmStorage.searchFilms(query, searchBy);
         genreStorage.load(films);
         directorStorage.load(films);
         return films;

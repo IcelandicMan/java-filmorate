@@ -146,6 +146,41 @@ public class FilmDbStorage implements FilmStorage {
         return filmList;
     }
 
+    @Override
+    public List<Film> searchFilms(String query, String searchBy) {
+        String[] searh = searchBy.split(",");
+        String sqlQuery = "SELECT f.ID, " +
+            "f.NAME, " +
+            "f.DESCRIPTION, " +
+            "f.RELEASEDATE, " +
+            "f.DURATION, " +
+            "f.MPA_ID, " +
+            "m.ID mpa_id, " +
+            "m.NAME mpa_name, " +
+            "d.ID director_id, " +
+            "d.NAME director, " +
+            "COUNT(fl.USER_ID) rate " +
+            "FROM FILMS f " +
+            "LEFT JOIN FILM_DIRECTORS fd ON f.id = fd.FILM_ID " +
+            "LEFT JOIN DIRECTORS d ON fd.DIRECTOR_ID  = d.ID " +
+            "LEFT JOIN MPA m ON f.MPA_ID = m.ID " +
+            "LEFT JOIN FILM_LIKES fl ON fl.FILM_ID = f.ID " +
+            "WHERE ";
+        List<Film> films;
+        if (searh.length == 2) {
+            sqlQuery += "(LOWER(f.NAME) LIKE LOWER('%" + query + "%') ) " +
+                "OR (LOWER(d.NAME) LIKE LOWER('%" + query + "%') ) ";
+        } else if (searchBy.equals("director")) {
+            sqlQuery += "(LOWER(d.NAME) LIKE LOWER('%" + query + "%') )";
+        } else if (searchBy.equals("title")) {
+            sqlQuery += "(LOWER(f.NAME) LIKE LOWER('%" + query + "%') )";
+        } else throw new FilmNotFoundException("Ошибка в поисковом запросе: " + query + ", " + searchBy);
+        sqlQuery += "GROUP BY f.ID ORDER BY rate DESC";
+        log.info(sqlQuery);
+        films = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm);
+        return films;
+    }
+
     public static Film makeFilm(ResultSet rs, int rowNum) throws SQLException {
         return new Film(
                 rs.getInt("id"),

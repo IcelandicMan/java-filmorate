@@ -65,4 +65,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getFilmsSortBy(Integer id, String sortBy) {
         return null;
     }
+
+    @Override
+    public List<Film> searchFilms(String query, String searhBy) {
+        return null;
+    }
 }
