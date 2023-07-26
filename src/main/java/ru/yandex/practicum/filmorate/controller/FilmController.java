@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import javax.validation.*;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
-import java.util.*;
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -91,5 +89,20 @@ public class FilmController {
         log.info("Запрос на отправку списка общих фильмов пользователей с id {} и {} выполнен успешно", userId,
                 friendId);
         return commonFilms;
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsSortByYear(@PathVariable int directorId, @RequestParam String sortBy) {
+        log.info("Запрошен список фильмов");
+        List<Film> films = filmService.getFilmsSortBy(directorId, sortBy);
+        log.info("Запрос на предоставление списка всех фильмов выплнен");
+        return films;
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilmsBy(@RequestParam("query") String query,@RequestParam("by") String searchBy) {
+        log.info("Запрос на поиск " + query + ", " + searchBy);
+        List<Film> films = filmService.searchFilmsBy(query, searchBy);
+        log.info("Запрос на поиск выполнен" + query + ", " + searchBy);
+        return films;
     }
 }

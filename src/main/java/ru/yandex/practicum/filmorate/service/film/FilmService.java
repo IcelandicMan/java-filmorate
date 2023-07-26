@@ -4,10 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.like.LikeStorage;
@@ -26,8 +24,8 @@ public class FilmService {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
+    private final DirectorStorage directorStorage;
     private final RecommendationDbStorage recommendationDbStorage;
-
 
     @Autowired
     public FilmService(
@@ -36,12 +34,14 @@ public class FilmService {
             MpaStorage mpaStorage,
             GenreStorage genreStorage,
             LikeStorage likeStorage,
+            DirectorStorage directorStorage,
             RecommendationDbStorage recommendationDbStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.mpaStorage = mpaStorage;
         this.genreStorage = genreStorage;
         this.likeStorage = likeStorage;
+        this.directorStorage = directorStorage;
         this.recommendationDbStorage = recommendationDbStorage;
     }
 
@@ -62,12 +62,14 @@ public class FilmService {
     public Film getFilm(int id) {
         final Film film = filmStorage.getFilm(id);
         genreStorage.load(Collections.singletonList(film));
+        directorStorage.load(Collections.singletonList(film));
         return film;
     }
 
     public List<Film> getFilms() {
         final List<Film> films = filmStorage.getFilms();
         genreStorage.load(films);
+        directorStorage.load(films);
         return films;
     }
 
@@ -114,5 +116,44 @@ public class FilmService {
 
     public List<Genre> getAllGenres() {
         return genreStorage.getAllGenres();
+    }
+
+    public List<Director> getDirectors() {
+        return directorStorage.getDirectors();
+    }
+
+    public Director getDirectorById(int id) {
+        return directorStorage.getDirectorById(id);
+    }
+
+    public Director createDirector(Director director) {
+        return directorStorage.createDirector(director);
+    }
+
+    public void deleteDirectorById(Integer id) {
+        directorStorage.deleteDirectorById(id);
+    }
+
+    public Director updateDirector(Director director) {
+        return directorStorage.updateDirector(director);
+    }
+
+    public List<Film> getFilmsSortBy(Integer id, String sortBy) {
+        if (sortBy.equals("year")) {
+            sortBy = "RELEASEDATE";
+        } else if (sortBy.equals("likes")) {
+            sortBy = " rate DESC";
+        }
+        List<Film> films = Collections.unmodifiableList(filmStorage.getFilmsSortBy(id, sortBy));
+        genreStorage.load(films);
+        directorStorage.load(films);
+        return films;
+    }
+
+    public List<Film> searchFilmsBy(String query, String searchBy) {
+        List<Film> films = filmStorage.searchFilms(query, searchBy);
+        genreStorage.load(films);
+        directorStorage.load(films);
+        return films;
     }
 }
