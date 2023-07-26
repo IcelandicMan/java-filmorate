@@ -34,59 +34,34 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public List<Film> getFilmsByLikes(Integer count, Integer genreId, Integer year) {
-        String sqlQuery;
+        String sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+                "m.name AS mpa_name, " +
+                "COUNT (fl.user_id) AS rate " +
+                "FROM films AS f " +
+                "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
+                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id ";
+        String sqlEnd = "GROUP BY f.id " +
+                "ORDER BY rate DESC " +
+                "LIMIT ?";
         List<Film> popularFilms;
         if (genreId == null && year == null) {
-            sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
-                    "m.name AS mpa_name, " +
-                    "COUNT (fl.user_id) AS rate " +
-                    "FROM films AS f " +
-                    "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
-                    "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
-                    "GROUP BY f.id " +
-                    "ORDER BY rate DESC " +
-                    "LIMIT ?";
+            sqlQuery += sqlEnd;
             popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, count);
         } else if (year == null) {
-            sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
-                    "m.name AS mpa_name, " +
-                    "COUNT (fl.user_id) AS rate, " +
-                    "FROM films AS f " +
-                    "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
-                    "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
-                    "LEFT JOIN film_genres AS fg ON f.id = fg.film_id " +
+            sqlQuery += "LEFT JOIN film_genres AS fg ON f.id = fg.film_id " +
                     "WHERE fg.genre_id = ? " +
-                    "GROUP BY f.id " +
-                    "ORDER BY rate DESC " +
-                    "LIMIT ?";
+                    sqlEnd;
             popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, genreId, count);
         } else if (genreId == null) {
-            sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
-                    "m.name AS mpa_name, " +
-                    "COUNT (fl.user_id) AS rate, " +
-                    "FROM films AS f " +
-                    "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
-                    "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
-                    "LEFT JOIN FILM_GENRES AS fg ON f.id = fg.film_id " +
-                    "WHERE EXTRACT (YEAR FROM CAST (f.releaseDate AS date)) = ? " +
-                    "GROUP BY f.id " +
-                    "ORDER BY rate DESC " +
-                    "LIMIT ?";
+            sqlQuery += "WHERE EXTRACT (YEAR FROM CAST (f.releaseDate AS date)) = ? " +
+                    sqlEnd;
             popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, year, count);
         } else {
-            sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
-                    "m.name AS mpa_name, " +
-                    "COUNT (fl.user_id) AS rate, " +
-                    "FROM films AS f " +
-                    "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
-                    "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
-                    "LEFT JOIN FILM_GENRES AS fg ON f.id = fg.film_id " +
+            sqlQuery += "LEFT JOIN film_genres AS fg ON f.id = fg.film_id " +
                     "WHERE fg.genre_id = ? " +
                     "AND " +
                     "EXTRACT (YEAR FROM CAST (f.releaseDate AS date)) = ? " +
-                    "GROUP BY f.id " +
-                    "ORDER BY rate DESC " +
-                    "LIMIT ?";
+                    sqlEnd;
             popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, genreId, year, count);
         }
         return popularFilms;
