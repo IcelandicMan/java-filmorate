@@ -36,7 +36,7 @@ public class MpaController {
     public List<Mpa> getAllMpa() {
         log.info("Запрошен список всех MPA Рейтинг");
         List<Mpa> mpaList = filmService.getAllMpa();
-        log.info("Запрос на предоставление списка всех MPA Рейтингов выплнен");
+        log.info("Запрос на предоставление списка всех MPA Рейтингов выполнен");
         return mpaList;
     }
 }
