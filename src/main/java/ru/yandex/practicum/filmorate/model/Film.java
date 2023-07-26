@@ -4,7 +4,9 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 import ru.yandex.practicum.filmorate.validator.ValidReleaseDate;
 
-import javax.validation.constraints.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,8 @@ public class Film {
     private int rate;
 
     private List<Genre> genres = new ArrayList<>();
+
+    private List<Director> directors = new ArrayList<>();
 
     public Film() {
     }

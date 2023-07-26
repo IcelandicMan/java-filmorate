@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import javax.validation.*;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
-import java.util.*;
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -39,13 +37,24 @@ public class FilmController {
         return createdFilm;
     }
 
-
     @GetMapping
     public List<Film> getAllFilms() {
         log.info("Запрошен список фильмов");
         List<Film> films = filmService.getFilms();
         log.info("Запрос на предоставление списка всех фильмов выполнен");
         return films;
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count,
+                                      @RequestParam(required = false) Integer genreId,
+                                      @RequestParam(required = false) Integer year) {
+        log.info("Запрошен список из {} популярных фильмов с жанром под id {} и {} годом выпуска",
+                count, genreId, year);
+        List<Film> popularFilms = filmService.getFilmsByLikes(count, genreId, year);
+        log.info("Запрос списка из {} популярных фильмов с жанром под id {} и {} годом выпуска выполнен",
+                count, genreId, year);
+        return popularFilms;
     }
 
     @PutMapping()
@@ -70,11 +79,35 @@ public class FilmController {
         log.info("Запрос от пользователя с id {} на удаление лайка к фильму с id {} выполнен", userId, id);
     }
 
-    @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Запрошен список " + count + " популярных фильмов");
-        List<Film> popularFilms = filmService.getFilmsByLikes(count);
-        log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
-        return popularFilms;
+    @DeleteMapping("/{id}")
+    public void deleteFilm(@PathVariable int id) {
+        log.info("Запрошено на удаление фильма с id {} ", id);
+        filmService.deleteFilm(id);
+        log.info("Запрос на удаление фильма c id {} выполнен", id);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonUsersFilms(@RequestParam int userId, @RequestParam int friendId) {
+        log.info("Запрошен список общих фильмов пользователей с id {} и {}", userId, friendId);
+        List<Film> commonFilms = filmService.getCommonUsersFilms(userId, friendId);
+        log.info("Запрос на отправку списка общих фильмов пользователей с id {} и {} выполнен успешно", userId,
+                friendId);
+        return commonFilms;
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsSortByYear(@PathVariable int directorId, @RequestParam String sortBy) {
+        log.info("Запрошен список фильмов");
+        List<Film> films = filmService.getFilmsSortBy(directorId, sortBy);
+        log.info("Запрос на предоставление списка всех фильмов выплнен");
+        return films;
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilmsBy(@RequestParam("query") String query, @RequestParam("by") String searchBy) {
+        log.info("Запрос на поиск " + query + ", " + searchBy);
+        List<Film> films = filmService.searchFilmsBy(query, searchBy);
+        log.info("Запрос на поиск выполнен" + query + ", " + searchBy);
+        return films;
     }
 }

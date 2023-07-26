@@ -1,15 +1,16 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import javax.validation.*;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 import ru.yandex.practicum.filmorate.service.user.UserService;
 
-import java.util.*;
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -17,10 +18,12 @@ import java.util.*;
 public class UserController {
 
     private final UserService userService;
+    private final FilmService filmService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, FilmService filmService) {
         this.userService = userService;
+        this.filmService = filmService;
     }
 
     @GetMapping("/{id}")
@@ -78,6 +81,14 @@ public class UserController {
         return friends;
     }
 
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendations(@PathVariable int id) {
+        log.info("Запрошен список рекомендованных фильмов для пользователя под  id {} ", id);
+        List<Film> films = filmService.getRecommendation(id);
+        log.info("Запрос на предоставление списка рекомендованных фильмов для пользователя под  id {} выполнен", id);
+        return films;
+    }
+
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable int id, @PathVariable int friendId) {
         log.info("Запрошен от пользователя с id {} удаление из друзей пользователя с id {} ", id, friendId);
@@ -85,7 +96,6 @@ public class UserController {
         log.info("Запрос от пользователя с id id {} на удаление из друзей пользователя с id {} выполнен", friendId, id);
     }
 
-    //Не безопасный запрос
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable int id) {
         log.info("Запрошено на удаление пользователя с id {} ", id);

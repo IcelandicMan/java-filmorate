@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -33,17 +34,55 @@ public class LikeDbStorage implements LikeStorage {
     }
 
     @Override
-    public List<Film> getFilmsByLikes(int count) {
+    public List<Film> getFilmsByLikes(Integer count, Integer genreId, Integer year) {
+        String sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+                "m.name AS mpa_name, " +
+                "COUNT (fl.user_id) AS rate " +
+                "FROM films AS f " +
+                "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
+                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id ";
+        String sqlEnd = "GROUP BY f.id " +
+                "ORDER BY rate DESC " +
+                "LIMIT ?";
+        List<Film> popularFilms;
+        if (genreId == null && year == null) {
+            sqlQuery += sqlEnd;
+            popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, count);
+        } else if (year == null) {
+            sqlQuery += "LEFT JOIN film_genres AS fg ON f.id = fg.film_id " +
+                    "WHERE fg.genre_id = ? " +
+                    sqlEnd;
+            popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, genreId, count);
+        } else if (genreId == null) {
+            sqlQuery += "WHERE EXTRACT (YEAR FROM CAST (f.releaseDate AS date)) = ? " +
+                    sqlEnd;
+            popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, year, count);
+        } else {
+            sqlQuery += "LEFT JOIN film_genres AS fg ON f.id = fg.film_id " +
+                    "WHERE fg.genre_id = ? " +
+                    "AND " +
+                    "EXTRACT (YEAR FROM CAST (f.releaseDate AS date)) = ? " +
+                    sqlEnd;
+            popularFilms = jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, genreId, year, count);
+        }
+        return popularFilms;
+    }
+
+    @Override
+    public List<Film> getCommonUsersFilms(int userId, int friendId) {
         final String sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
                 "m.name AS mpa_name, " +
                 "COUNT (fl.user_id) AS rate " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
                 "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+                "WHERE f.id IN (SELECT FILM_ID  FROM FILM_LIKES fl WHERE USER_ID = ?) " +
+                "AND f.id IN (SELECT FILM_ID FROM FILM_LIKES fl WHERE USER_ID = ?)" +
                 "GROUP BY f.id " +
-                "ORDER by rate DESC " +
-                "LIMIT ?";
-        return jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, count);
+                "ORDER BY rate";
+        return jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, userId, friendId).stream()
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
 

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
+import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -20,7 +21,6 @@ public class ReviewService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
     private final FeedStorage feedStorage;
-
     public ReviewService(ReviewStorage reviewStorage, @Qualifier("filmDbStorage") FilmStorage filmStorage,
                          @Qualifier("userDbStorage") UserStorage userStorage, FeedStorage feedStorage) {
         this.reviewStorage = reviewStorage;
@@ -50,7 +50,6 @@ public class ReviewService {
         Review review = reviewStorage.getReview(reviewId);
         reviewStorage.deleteReview(reviewId);
         feedStorage.addFeed(new Feed(0, null, review.getUserId(), "REVIEW", "REMOVE", reviewId));
-
     }
 
     public Review getReview(int reviewId) {
