@@ -17,5 +17,7 @@ public interface FilmStorage {
     List<Film> getFilms();
 
     List<Film> getFilmsSortBy(Integer id, String sortBy);
+
+    List<Film> searchFilms(String query, String searhBy);
 }
 
