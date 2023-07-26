@@ -93,6 +93,7 @@ public class FilmController {
         log.info("Запрос на отправку списка общих фильмов пользователей с id {} и {} выполнен успешно", userId,
                 friendId);
         return commonFilms;
+    }
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsSortByYear(@PathVariable int directorId, @RequestParam String sortBy) {
@@ -103,7 +104,7 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public List<Film> searchFilmsBy(@RequestParam("query") String query,@RequestParam("by") String searchBy) {
+    public List<Film> searchFilmsBy(@RequestParam("query") String query, @RequestParam("by") String searchBy) {
         log.info("Запрос на поиск " + query + ", " + searchBy);
         List<Film> films = filmService.searchFilmsBy(query, searchBy);
         log.info("Запрос на поиск выполнен" + query + ", " + searchBy);
