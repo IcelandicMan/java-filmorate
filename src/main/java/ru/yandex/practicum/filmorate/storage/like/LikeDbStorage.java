@@ -49,13 +49,16 @@ public class LikeDbStorage implements LikeStorage {
 
     @Override
     public List<Film> getCommonUsersFilms(int userId, int friendId) {
-        final String sqlQuery = "SELECT DISTINCT *, " +
-                "m.name AS mpa_name " +
+        final String sqlQuery = "SELECT f.id, f.name, f.description, f.releaseDate, f.duration, f.mpa_id, " +
+                "m.name AS mpa_name, " +
+                "COUNT (fl.user_id) AS rate " +
                 "FROM films AS f " +
                 "LEFT JOIN mpa AS m ON f.mpa_id = m.id " +
-                "INNER JOIN film_likes AS fl on f.ID = fl.film_id " +
-                "WHERE fl.user_id IN (?, ?) " +
-                "ORDER by rate DESC;";
+                "LEFT JOIN film_likes AS fl ON f.id = fl.film_id " +
+                "WHERE f.id IN (SELECT FILM_ID  FROM FILM_LIKES fl WHERE USER_ID = ?) " +
+                "AND f.id IN (SELECT FILM_ID FROM FILM_LIKES fl WHERE USER_ID = ?)" +
+                "GROUP BY f.id " +
+                "ORDER BY rate";
         return jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, userId, friendId).stream()
                 .distinct()
                 .collect(Collectors.toList());
