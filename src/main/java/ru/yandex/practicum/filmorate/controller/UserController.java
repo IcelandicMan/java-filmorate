@@ -60,14 +60,14 @@ public class UserController {
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable int id, @PathVariable int friendId) {
-        log.info("Запрошен от пользователя с id {} добавление в друзья пользователя с id {} ", id, friendId);
+        log.info("Запрос от пользователя с id {} добавление в друзья пользователя с id {} ", id, friendId);
         userService.addFriend(id, friendId);
         log.info("Запрос от пользователя с id {} на добавление в друзья пользователя id {} выполнен", id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
-        log.info("Запрошен от пользователя с id {} список общих друзей с пользователем с id {} ", id, otherId);
+        log.info("Запрос от пользователя с id {} список общих друзей с пользователем с id {} ", id, otherId);
         List<User> commonFriends = userService.getCommonFriends(id, otherId);
         log.info("Запрос списка общих друзей пользователя с id {} с пользователем с id {} выполнен", id, otherId);
         return commonFriends;
