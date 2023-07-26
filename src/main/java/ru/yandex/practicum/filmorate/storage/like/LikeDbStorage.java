@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,7 +46,7 @@ public class LikeDbStorage implements LikeStorage {
                 "LIMIT ?";
         return jdbcTemplate.query(sqlQuery, FilmDbStorage::makeFilm, count);
     }
-  
+
     @Override
     public List<Film> getCommonUsersFilms(int userId, int friendId) {
         final String sqlQuery = "SELECT DISTINCT *, " +
