@@ -150,11 +150,4 @@ public class FilmService {
         directorStorage.load(films);
         return films;
     }
-
-    public List<Film> searchFilmsBy(String query, String searchBy) {
-        List<Film> films = filmStorage.searchFilms(query, searchBy);
-        genreStorage.load(films);
-        directorStorage.load(films);
-        return films;
-    }
 }
