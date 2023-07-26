@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import javax.validation.*;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
-import java.util.*;
+import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -82,5 +80,13 @@ public class FilmController {
         log.info("Запрошено на удаление фильма с id {} ", id);
         filmService.deleteFilm(id);
         log.info("Запрос на удаление фильма c id {} выполнен", id);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getFilmsSortByYear(@PathVariable int directorId, @RequestParam String sortBy) {
+        log.info("Запрошен список фильмов");
+        List<Film> films = filmService.getFilmsSortBy(directorId, sortBy);
+        log.info("Запрос на предоставление списка всех фильмов выплнен");
+        return films;
     }
 }
