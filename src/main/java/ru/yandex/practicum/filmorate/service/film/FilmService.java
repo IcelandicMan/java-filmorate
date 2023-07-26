@@ -85,16 +85,17 @@ public class FilmService {
         likeStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getFilmsByLikes(int count) {
-        List<Film> films = likeStorage.getFilmsByLikes(count);
+    public List<Film> getFilmsByLikes(Integer count, Integer genreId, Integer year) {
+        List<Film> films = likeStorage.getFilmsByLikes(count, genreId, year);
         genreStorage.load(films);
+        directorStorage.load(films);
         return films;
     }
 
     public List<Film> getRecommendation(int userId) {
         List<Film> films = recommendationDbStorage.getRecommendation(userId);
         genreStorage.load(films);
-        // В дальнейшем нужно добавить режисеров load
+        directorStorage.load(films);
         return films;
     }
 

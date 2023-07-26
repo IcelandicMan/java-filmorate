@@ -46,10 +46,14 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
-        log.info("Запрошен список " + count + " популярных фильмов");
-        List<Film> popularFilms = filmService.getFilmsByLikes(count);
-        log.info("Запрос на отправку списка " + count + " популярных фильмов выполнен");
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") Integer count,
+                                      @RequestParam(required = false) Integer genreId,
+                                      @RequestParam(required = false) Integer year) {
+        log.info("Запрошен список из {} популярных фильмов с жанром под id {} и {} годом выпуска",
+                count, genreId, year);
+        List<Film> popularFilms = filmService.getFilmsByLikes(count, genreId, year);
+        log.info("Запрос списка из {} популярных фильмов с жанром под id {} и {} годом выпуска выполнен",
+                count, genreId, year);
         return popularFilms;
     }
 
@@ -89,6 +93,7 @@ public class FilmController {
         log.info("Запрос на отправку списка общих фильмов пользователей с id {} и {} выполнен успешно", userId,
                 friendId);
         return commonFilms;
+    }
 
     @GetMapping("/director/{directorId}")
     public List<Film> getFilmsSortByYear(@PathVariable int directorId, @RequestParam String sortBy) {
@@ -99,7 +104,7 @@ public class FilmController {
     }
 
     @GetMapping("/search")
-    public List<Film> searchFilmsBy(@RequestParam("query") String query,@RequestParam("by") String searchBy) {
+    public List<Film> searchFilmsBy(@RequestParam("query") String query, @RequestParam("by") String searchBy) {
         log.info("Запрос на поиск " + query + ", " + searchBy);
         List<Film> films = filmService.searchFilmsBy(query, searchBy);
         log.info("Запрос на поиск выполнен" + query + ", " + searchBy);
