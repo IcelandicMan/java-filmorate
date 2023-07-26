@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.*;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.director.DirectorStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
@@ -24,6 +25,7 @@ public class FilmService {
     private final MpaStorage mpaStorage;
     private final GenreStorage genreStorage;
     private final LikeStorage likeStorage;
+    private final FeedStorage feedStorage;
     private final DirectorStorage directorStorage;
     private final RecommendationDbStorage recommendationDbStorage;
 
@@ -33,6 +35,7 @@ public class FilmService {
             @Qualifier("userDbStorage") UserStorage userStorage,
             MpaStorage mpaStorage,
             GenreStorage genreStorage,
+            FeedStorage feedStorage,
             LikeStorage likeStorage,
             DirectorStorage directorStorage,
             RecommendationDbStorage recommendationDbStorage) {
@@ -41,6 +44,7 @@ public class FilmService {
         this.mpaStorage = mpaStorage;
         this.genreStorage = genreStorage;
         this.likeStorage = likeStorage;
+        this.feedStorage = feedStorage;
         this.directorStorage = directorStorage;
         this.recommendationDbStorage = recommendationDbStorage;
     }
@@ -77,12 +81,14 @@ public class FilmService {
         User user = userStorage.getUser(userId);
         Film film = filmStorage.getFilm(filmId);
         likeStorage.addLike(filmId, userId);
+        feedStorage.addFeed(new Feed(0, null, userId, "LIKE", "ADD", filmId));
     }
 
     public void deleteLike(int filmId, int userId) {
         User user = userStorage.getUser(userId);
         Film film = filmStorage.getFilm(filmId);
         likeStorage.deleteLike(filmId, userId);
+        feedStorage.addFeed(new Feed(0, null, userId, "LIKE", "REMOVE", filmId));
     }
 
     public List<Film> getFilmsByLikes(Integer count, Integer genreId, Integer year) {

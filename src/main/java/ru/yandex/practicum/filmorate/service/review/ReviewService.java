@@ -2,6 +2,9 @@ package ru.yandex.practicum.filmorate.service.review;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
@@ -17,29 +20,37 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final FeedStorage feedStorage;
 
-    public ReviewService(ReviewStorage reviewStorage, @Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+    public ReviewService(ReviewStorage reviewStorage, @Qualifier("filmDbStorage") FilmStorage filmStorage,
+                         @Qualifier("userDbStorage") UserStorage userStorage, FeedStorage feedStorage) {
         this.reviewStorage = reviewStorage;
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.feedStorage = feedStorage;
     }
 
     public Review createReview(Review review) {
         userStorage.getUser(review.getUserId());
         filmStorage.getFilm(review.getFilmId());
-        return reviewStorage.createReview(review);
+        Review review1 = reviewStorage.createReview(review);
+        feedStorage.addFeed(new Feed(0, null, review1.getUserId(), "REVIEW", "ADD", review1.getReviewId()));
+        return review1;
     }
 
     public Review updateReview(Review review) {
         reviewStorage.getReview(review.getReviewId());
         userStorage.getUser(review.getUserId());
         filmStorage.getFilm(review.getFilmId());
-        return reviewStorage.updateReview(review);
+        Review review1 = reviewStorage.updateReview(review);
+        feedStorage.addFeed(new Feed(0, null, review1.getUserId(), "REVIEW", "UPDATE", review1.getReviewId()));
+        return review1;
     }
 
     public void deleteReview(int reviewId) {
-        reviewStorage.getReview(reviewId);
+        Review review = reviewStorage.getReview(reviewId);
         reviewStorage.deleteReview(reviewId);
+        feedStorage.addFeed(new Feed(0, null, review.getUserId(), "REVIEW", "REMOVE", reviewId));
     }
 
     public Review getReview(int reviewId) {
