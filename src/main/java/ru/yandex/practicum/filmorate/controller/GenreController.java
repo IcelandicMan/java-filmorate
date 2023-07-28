@@ -27,7 +27,7 @@ public class GenreController {
     public Genre getGenre(@PathVariable int id) {
         log.info("Запрошен жанр под id: {} ", id);
         Genre genre = filmService.getGenreById(id);
-        log.info("Запрос жанр под id {} выполнен: {} ", id, genre);
+        log.info("Запрос жанра под id {} выполнен: {} ", id, genre);
         return genre;
     }
 

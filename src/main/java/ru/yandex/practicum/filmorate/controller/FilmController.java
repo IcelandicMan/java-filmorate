@@ -99,7 +99,7 @@ public class FilmController {
     public List<Film> getFilmsSortByYear(@PathVariable int directorId, @RequestParam String sortBy) {
         log.info("Запрошен список фильмов");
         List<Film> films = filmService.getFilmsSortBy(directorId, sortBy);
-        log.info("Запрос на предоставление списка всех фильмов выплнен");
+        log.info("Запрос на предоставление списка всех фильмов выполнен");
         return films;
     }
 
