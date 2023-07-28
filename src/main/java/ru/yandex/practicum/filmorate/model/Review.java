@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +18,7 @@ public class Review {
     private Integer userId;
     @NotNull
     private Integer filmId;
-    @NotNull
+    @NotBlank
     private String content;
     private int useful;
 

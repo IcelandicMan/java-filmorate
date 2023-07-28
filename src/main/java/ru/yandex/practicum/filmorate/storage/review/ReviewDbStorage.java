@@ -26,7 +26,6 @@ public class ReviewDbStorage implements ReviewStorage {
                 .withTableName("reviews")
                 .usingGeneratedKeyColumns("id");
         review.setReviewId((Integer) simpleJdbcInsert.executeAndReturnKey(review.toMap()));
-        jdbcTemplate.update("UPDATE reviews SET is_positive = ? WHERE id = ?", review.getIsPositive(), review.getReviewId());
         return review;
     }
 

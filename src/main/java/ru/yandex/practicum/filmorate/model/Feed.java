@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -17,10 +18,10 @@ public class Feed {
     private Long time;
     @NotNull
     private Integer userId;
-    @NotNull
+    @NotBlank
     @JsonProperty("eventType")
     private String event;
-    @NotNull
+    @NotBlank
     private String operation;
     @NotNull
     private Integer entityId;
