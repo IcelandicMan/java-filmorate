@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.film.FilmService;
 
-
 import java.util.List;
 
 @Slf4j
@@ -36,7 +35,7 @@ public class MpaController {
     public List<Mpa> getAllMpa() {
         log.info("Запрошен список всех MPA Рейтинг");
         List<Mpa> mpaList = filmService.getAllMpa();
-        log.info("Запрос на предоставление списка всех MPA Рейтингов выплнен");
+        log.info("Запрос на предоставление списка всех MPA Рейтингов выполнен");
         return mpaList;
     }
 }
